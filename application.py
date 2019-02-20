@@ -12,12 +12,13 @@ application = Flask(__name__)
 #app.config.from_object(app_config['development'])
 application.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
 application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db.init_app(application)
+#db.init_app(application)
 #db = SQLAlchemy(application)
 
 from models import db
 from models.JobPosting import JobPosting, JobPostingSchema
 from models.User import User
+db.init_app(application)
 
 @application.route('/ping/', methods=['GET'])
 def index():
