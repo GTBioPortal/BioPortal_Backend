@@ -13,9 +13,9 @@ application = Flask(__name__)
 #app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
 #app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 #db.init_app(app)
-db = SQLAlchemy(application)
+#db = SQLAlchemy(application)
 
-import models
+from models import db
 from models.JobPosting import JobPosting, JobPostingSchema
 from models.User import User
 
