@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 
 #db = SQLAlchemy()
-from BioPortal_Backend.application import db
+from app.application import db
 
 ma = Marshmallow()
 
