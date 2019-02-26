@@ -1,25 +1,12 @@
-#from models import db
-#from models.JobPosting import JobPosting, JobPostingSchema
-#from models.User import User
+import os
+
 from config import app_config
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-import os
-
-
-
-#application = Flask(__name__)
-#app.config.from_object(app_config['development'])
-#application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-#db.init_app(application)
-#db = SQLAlchemy(application)
-
 from models import db, application
 from models.JobPosting import JobPosting, JobPostingSchema
-from models.User import User
+from models.Employer import Employer
 
-
-#db.init_app(application)
 
 @application.route('/ping/', methods=['GET'])
 def index():
@@ -82,12 +69,12 @@ def get_job():
 @application.route('/account/create', methods=['POST'])
 def create_account():
     data = request.json
-    user = User.query.filter_by(email=data.get('email')).first()
+    user = Employer.query.filter_by(email=data.get('email')).first()
     if not user:
-        user = User.query.filter_by(username=data.get('username')).first()
+        user = Employer.query.filter_by(username=data.get('username')).first()
     if not user:
         try:
-            user = User(
+            user = Employer(
                 data['name'],
                 data['email'],
                 data['username'],
@@ -122,9 +109,9 @@ def create_account():
 def login():
     data = request.json
     try:
-        user = User.query.filter_by(username=data['username']).first()
+        user = Employer.query.filter_by(username=data['username']).first()
         if not user:
-            user = User.query.filter_by(email=data['username']).first()
+            user = Employer.query.filter_by(email=data['username']).first()
         if user:
             if bcrypt.check_password_hash(user.password, data['password']):
                 auth_token = user.encode_auth_token(user.id)

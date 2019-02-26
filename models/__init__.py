@@ -11,4 +11,4 @@ db = SQLAlchemy(application)
 ma = Marshmallow()
 
 from .JobPosting import JobPosting, JobPostingSchema
-from .User import User, ExpiredToken
+from .Employer import Employer, ExpiredToken
