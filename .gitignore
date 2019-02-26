@@ -2,3 +2,4 @@ lib/*
 migrations/*
 cloudbuild.yaml
 index.yaml
+*.pyc
