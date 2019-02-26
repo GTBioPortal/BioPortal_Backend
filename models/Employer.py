@@ -7,13 +7,13 @@ class Employer(db.Model):
     __tablename__ = 'employers'
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(255), unique=True, nullable=False)
+    username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
+    password = db.Column(db.String(64), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
     is_approved = db.Column(db.Boolean, nullable=False, default=False)
-    name = db.Column(db.String(255), nullable=False)
-    company = db.Column(db.String(255), nullable=False)
+    name = db.Column(db.String(64), nullable=False)
+    company = db.Column(db.String(64), nullable=False)
     company_description = db.Column(db.Text, nullable=False)
 
     def __init__(self, name, email, username, password, company, company_description):
