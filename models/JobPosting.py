@@ -14,6 +14,9 @@ class JobPosting(db.Model):
     description = db.Column(db.Text, nullable=False)
     deadline = db.Column(db.DateTime, default=db.func.current_timestamp())
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    resume = db.Column(db.Boolean, default=False)
+    cover_letter = db.Column(db.Boolean, default=False)
+    transcript = db.Column(db.Boolean, default=False)
 
     def __init__(self, data):
         self.title = data.get('title')
