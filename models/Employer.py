@@ -1,5 +1,6 @@
 import datetime
 import jwt
+import os
 
 from . import db
 from . import pwd_context
@@ -33,7 +34,7 @@ class Employer(db.Model):
             }
             return jwt.encode(
                 payload,
-                app.config.get('SECRET_KEY'),
+                os.environ['SECRET_KEY'],
                 algorithm='HS256'
             )
         except Exception as e:
