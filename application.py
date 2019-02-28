@@ -111,7 +111,7 @@ def login():
     try:
         user = Employer.query.filter_by(email=data['email']).first()
         if user:
-            if bcrypt.check_password_hash(user.password, data['password']):
+            if pwd_context.verify(data['password'], user.password):
                 auth_token = user.encode_auth_token(user.id)
                 if auth_token:
                     response = jsonify({
