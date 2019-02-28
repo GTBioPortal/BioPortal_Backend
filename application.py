@@ -136,6 +136,7 @@ def login():
                 response.status = 401
                 return response
     except Exception as e:
+        raise e
         response = jsonify({
             'status': 'error',
             'message': 'error loging in'
