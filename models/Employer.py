@@ -1,4 +1,5 @@
 import datetime
+import jwt
 
 from . import db
 from . import pwd_context
