@@ -3,7 +3,7 @@ import os
 from config import app_config
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from models import db, application
+from models import db, application, pwd_context
 from models.JobPosting import JobPosting, JobPostingSchema
 from models.Employer import Employer
 

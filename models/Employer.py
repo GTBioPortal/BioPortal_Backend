@@ -1,14 +1,15 @@
 import datetime
 
 from . import db
+from . import pwd_context
 
 
 class Employer(db.Model):
     __tablename__ = 'employers'
 
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    password = db.Column(db.String(64), nullable=False)
+    email = db.Column(db.String(256), unique=True, nullable=False)
+    password = db.Column(db.String(256), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
     is_approved = db.Column(db.Boolean, nullable=False, default=False)
     name = db.Column(db.String(64), nullable=False)
@@ -18,18 +19,16 @@ class Employer(db.Model):
     def __init__(self, name, email, password, company, company_description):
         self.name = name
         self.email = email
-        self.password = bcrypt.generate_password_hash(
-            password, app.config.get('BCRYPT_LOG_ROUNDS')
-        ).decode()
+        self.password = pwd_context.hash(password)
         self.company = company
         self.company_description = company_description
 
     def encode_auth_token(self, uid):
         try:
             payload = {
-                'expiration': datetime.datetime.utcnow() + datetime.timedelta(hours=2),
-                'issued_at': datetime.datetime.utcnow(),
-                'uid': uid
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2),
+                'iat': datetime.datetime.utcnow(),
+                'sub': uid
             }
             return jwt.encode(
                 payload,
