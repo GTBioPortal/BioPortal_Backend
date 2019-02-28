@@ -45,32 +45,9 @@ class Employer(db.Model):
     def decode_auth_token(token):
         try:
             payload = jwt.decode(token, app.config.get('SECRET_KEY'))
-            is_expired = ExpiredToken.check_expired(token)
-            if is_expired:
-                return 'Expired Token'
-            else:
-                return payload['uid']
+            return payload['uid']
         except jwt.ExpiredSignatureError:
             return 'Expired Signature'
         except jwt.InvalidTokenError:
             return 'Invalid JWT'
 
-
-class ExpiredToken(db.Model):
-    __tablename__ = 'jwt_tokens'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    token = db.Column(db.String(256), unique=True, nullable=False)
-    expiration_time = db.Column(db.DateTime, nullable=False)
-
-    def __init__(self, token):
-        self.token = token
-        self.expiration_time = datetime.datetime.now()
-
-    @staticmethod
-    def check_expired(token):
-        res = ExpiredToken.query.filter_by(token=str(token)).first()
-        if res:
-            return True
-        else:
-            return False

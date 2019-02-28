@@ -10,5 +10,8 @@ db = SQLAlchemy(application)
 
 ma = Marshmallow()
 
+from .Admin import Admin
+from .Application import Application
+from .Employer import Employer
 from .JobPosting import JobPosting, JobPostingSchema
-from .Employer import Employer, ExpiredToken
+from .Student import Student
