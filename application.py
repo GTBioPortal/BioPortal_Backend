@@ -89,6 +89,7 @@ def create_account():
             response.status_code = 200
             return response
         except Exception as e:
+            raise e
             response = jsonify({
                 'status': 'error',
                 'message': 'Error creating account',
