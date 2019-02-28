@@ -1,5 +1,5 @@
 lib/*
-migrations/*
 cloudbuild.yaml
 index.yaml
 *.pyc
+*/__pycache__
