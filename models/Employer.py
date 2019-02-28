@@ -37,6 +37,7 @@ class Employer(db.Model):
                 algorithm='HS256'
             )
         except Exception as e:
+            raise e
             return e
 
     def save(self):
