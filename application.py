@@ -86,8 +86,7 @@ def create_account():
                 'message': 'Account created',
                 'auth_token': auth_token.decode()
             })
-            response.status_code = 200
-            return response
+            return response, 200
         except Exception as e:
             raise e
             response = jsonify({
@@ -95,15 +94,13 @@ def create_account():
                 'message': 'Error creating account',
                 'error': str(e)
             })
-            response.status_code = 401
-            return response
+            return response, 401
     else:
         response = jsonify({
             'status': 'error',
             'message': 'User already exists'
         })
-        response.status_code = 202
-        return response
+        return response, 202
 
 @application.route('/account/login', methods=['POST'])
 def login():
@@ -119,30 +116,26 @@ def login():
                         'message': 'logged in',
                         'auth_token': auth_token.decode()
                     })
-                    response.status = 200
-                    return response
+                    return response, 200
                 else:
                     response = jsonify({
                         'status': 'error',
                         'message': 'authentication error'
                     })
-                    response.status = 401
-                    return response
+                    return response, 401
             else:
                 response = jsonify({
                     'status': 'error',
                     'message': 'invalid credentials'
                 })
-                response.status = 401
-                return response
+                return response, 401
     except Exception as e:
         raise e
         response = jsonify({
             'status': 'error',
             'message': 'error loging in'
         })
-        response.status = 401
-        return response
+        return response, 401
 
 if __name__ == '__main__':
     application.run(debug=True)
