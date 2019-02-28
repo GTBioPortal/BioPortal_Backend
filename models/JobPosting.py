@@ -53,3 +53,6 @@ class JobPostingSchema(ma.Schema):
     start_date = fields.DateTime()
     deadline = fields.DateTime()
     created_at = fields.DateTime()
+    resume = fields.Boolean()
+    cover_letter = fields.Boolean()
+    transcript = fields.Boolean()
