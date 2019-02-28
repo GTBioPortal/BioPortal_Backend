@@ -7,7 +7,6 @@ class Employer(db.Model):
     __tablename__ = 'employers'
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(64), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
@@ -16,10 +15,9 @@ class Employer(db.Model):
     company = db.Column(db.String(64), nullable=False)
     company_description = db.Column(db.Text, nullable=False)
 
-    def __init__(self, name, email, username, password, company, company_description):
+    def __init__(self, name, email, password, company, company_description):
         self.name = name
         self.email = email
-        self.username = username
         self.password = bcrypt.generate_password_hash(
             password, app.config.get('BCRYPT_LOG_ROUNDS')
         ).decode()

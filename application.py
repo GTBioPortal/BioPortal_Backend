@@ -71,15 +71,13 @@ def create_account():
     data = request.json
     user = Employer.query.filter_by(email=data.get('email')).first()
     if not user:
-        user = Employer.query.filter_by(username=data.get('username')).first()
-    if not user:
         try:
             user = Employer(
                 data['name'],
                 data['email'],
-                data['username'],
                 data['password'],
-                data['account_type']
+                data['company'],
+                data['company_description']
             )
             user.save()
             auth_token = user.encode_auth_token(user.id)
@@ -109,9 +107,7 @@ def create_account():
 def login():
     data = request.json
     try:
-        user = Employer.query.filter_by(username=data['username']).first()
-        if not user:
-            user = Employer.query.filter_by(email=data['username']).first()
+        user = Employer.query.filter_by(email=data['email']).first()
         if user:
             if bcrypt.check_password_hash(user.password, data['password']):
                 auth_token = user.encode_auth_token(user.id)
