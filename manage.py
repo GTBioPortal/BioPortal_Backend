@@ -8,11 +8,7 @@ from flask_migrate import Migrate, MigrateCommand
 #app = create_app(env_name)
 
 
-#manager = Manager(app)
-#migrate = Migrate(app, db)
+manager = Manager(application)
+migrate = Migrate(application, db)
 
-#manager.add_command('db', MigrateCommand)
-
-
-if __name__ == '__main__':
-    db.create_all()
+manager.add_command('db', MigrateCommand)
