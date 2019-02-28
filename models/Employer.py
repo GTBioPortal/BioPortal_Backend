@@ -38,6 +38,21 @@ class Employer(db.Model):
         except Exception as e:
             return e
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self, data):
+        for key, item in data.items():
+            setattr(self, key, item)
+        db.session.commit()
+    
+    # TODO: delete needs to also change relationship tables
+    # e.g. also delete all job postings this user has created
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
     @staticmethod
     def decode_auth_token(token):
         try:
