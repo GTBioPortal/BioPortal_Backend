@@ -54,7 +54,7 @@ def create_job():
         })
         return response, 200
     else:
-        return jsonify(response), 401
+        return jsonify(auth), 401
 
 # TODO: Make paginated
 @application.route('/jobs/', methods=['GET'])
