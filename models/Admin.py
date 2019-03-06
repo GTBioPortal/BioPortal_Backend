@@ -27,7 +27,7 @@ class Admin(db.Model):
             }
             return jwt.encode(
                 payload,
-                app.config.get('SECRET_KEY'),
+                os.environ['SECRET_KEY'],
                 algorithm='HS256'
             )
         except Exception as e:
@@ -36,7 +36,7 @@ class Admin(db.Model):
     @staticmethod
     def decode_auth_token(token):
         try:
-            payload = jwt.decode(token, app.config.get('SECRET_KEY'))
+            payload = jwt.decode(token, os.environ['SECRET_KEY'])
             return payload['uid']
         except jwt.ExpiredSignatureError:
             return 'Expired JWT'
