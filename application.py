@@ -34,8 +34,7 @@ def verify_auth(request, user_type):
     else:
         response = {
             'status': 'error',
-            'message': 'invalid JWT',
-            'header': request.headers
+            'message': 'invalid JWT'
         }
         return response
 
@@ -45,6 +44,7 @@ def index():
 
 @application.route('/jobs/create', methods=['POST'])
 def create_job():
+    return jsonify(request.json), 200
     auth = verify_auth(request, Employer)
     if auth['status'] == 'success':
         data = request.json
