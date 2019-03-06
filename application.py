@@ -44,7 +44,6 @@ def index():
 
 @application.route('/jobs/create', methods=['POST'])
 def create_job():
-    return jsonify(request.json), 200
     auth = verify_auth(request, Employer)
     if auth['status'] == 'success':
         data = request.json
