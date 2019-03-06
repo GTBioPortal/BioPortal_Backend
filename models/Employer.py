@@ -60,7 +60,7 @@ class Employer(db.Model):
     def decode_auth_token(token):
         try:
             payload = jwt.decode(token, os.environ['SECRET_KEY'])
-            return payload['uid']
+            return payload['sub']
         except jwt.ExpiredSignatureError:
             return 'Expired Signature'
         except jwt.InvalidTokenError:
