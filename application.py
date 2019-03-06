@@ -35,8 +35,7 @@ def verify_auth(request, user_type):
         response = {
             'status': 'error',
             'message': 'invalid JWT',
-            'header': auth_header,
-            'token': auth_token
+            'header': request.headers
         }
         return response
 
