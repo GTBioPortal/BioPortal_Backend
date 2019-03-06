@@ -8,20 +8,53 @@ from models.JobPosting import JobPosting, JobPostingSchema
 from models.Employer import Employer
 
 
+def verify_auth(request, user_type):
+    auth_header = request.headers.get('Authorization')
+    if auth_header:
+        auth_token = auth_header.split(' ')[1]
+    else:
+        auth_token = None
+    if auth_token:
+        resp = user_type.decode_auth_token(auth_token)
+        if not isinstance(resp, str):
+            user = user_type.query.filter_by(id=resp).first()
+            response = {
+                'status': 'success',
+                'data': {
+                    'user_id': user.id,
+                    'email': user.email
+                }
+            }
+            return response
+        response = {
+            'status': 'error',
+            'message': resp
+        }
+        return response
+    else:
+        response = {
+            'status': 'error',
+            'message': 'invalid JWT'
+        }
+        return response
+
 @application.route('/ping/', methods=['GET'])
 def index():
     return 'pong'
 
 @application.route('/jobs/create', methods=['POST'])
 def create_job():
-    data = request.json
-    posting = JobPosting(data)
-    posting.save()
-    response = jsonify({
-        'status': 'success'
-    })
-    response.status_code = 200
-    return response
+    auth = verify_auth(request, Employer)
+    if auth['status'] == 'success':
+        data = request.json
+        posting = JobPosting(data)
+        posting.save()
+        response = jsonify({
+            'status': 'success'
+        })
+        return response, 200
+    else:
+        return jsonify(response), 401
 
 # TODO: Make paginated
 @application.route('/jobs/', methods=['GET'])
