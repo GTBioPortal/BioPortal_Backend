@@ -17,11 +17,17 @@ class JobPosting(db.Model):
     resume = db.Column(db.Boolean, default=False)
     cover_letter = db.Column(db.Boolean, default=False)
     transcript = db.Column(db.Boolean, default=False)
+    author = db.Column(db.Integer, db.ForeignKey('employers.id'))
 
-    def __init__(self, data):
-        self.title = data.get('title')
-        self.company = data.get('company')
-        self.description = data.get('description')
+    def __init__(self, title, company, start_date, description, 
+        deadline, resume, cover_letter, transcript, author):
+        self.title = title
+        self.company = company
+        self.description = description
+        self.resume = resume
+        self.cover_letter = cover_letter
+        self.transcript = transcript
+        self.author = author
         
     
     def save(self):
@@ -37,6 +43,21 @@ class JobPosting(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    @property
+    def json(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'company': self.company,
+            'start_date': self.start_date,
+            'description': self.description,
+            'created_at': self.created_at,
+            'resume': self.resume,
+            'cover_letter': self.cover_letter,
+            'transcript': self.transcript,
+            'author': self.author.id
+        }
+
     @staticmethod
     def get_all_jobs():
         return JobPosting.query.all()
@@ -45,6 +66,7 @@ class JobPosting(db.Model):
     def get_job(id):
         return JobPosting.query.get(id)
 
+'''
 class JobPostingSchema(ma.Schema):
     id = fields.Integer(dump_only=True)
     title = fields.String(required=True)
@@ -56,3 +78,5 @@ class JobPostingSchema(ma.Schema):
     resume = fields.Boolean()
     cover_letter = fields.Boolean()
     transcript = fields.Boolean()
+    author = fields.Nested(EmployerSchema)
+'''

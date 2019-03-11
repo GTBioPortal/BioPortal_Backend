@@ -4,7 +4,7 @@ from config import app_config
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from models import db, application, pwd_context
-from models.JobPosting import JobPosting, JobPostingSchema
+from models.JobPosting import JobPosting
 from models.Employer import Employer
 
 
@@ -61,9 +61,15 @@ def create_job():
 def get_all_jobs():
     try:
         job_postings = JobPosting.get_all_jobs()
+        '''
         response = jsonify({
             'status': 'success',
             'jobs': JobPostingSchema(many=True).dump(job_postings).data
+        })
+        '''
+        response = jsonify({
+            'status': 'success',
+            'jobs': [job.json for job in job_postings]
         })
         response.status_code = 200
         return response

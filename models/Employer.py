@@ -17,6 +17,7 @@ class Employer(db.Model):
     name = db.Column(db.String(64), nullable=False)
     company = db.Column(db.String(64), nullable=False)
     company_description = db.Column(db.Text, nullable=False)
+    job_postings = db.relationship('JobPosting', backref='author', lazy='dynamic')
 
     def __init__(self, name, email, password, company, company_description):
         self.name = name
@@ -65,4 +66,3 @@ class Employer(db.Model):
             return 'Expired Signature'
         except jwt.InvalidTokenError:
             return 'Invalid JWT'
-
