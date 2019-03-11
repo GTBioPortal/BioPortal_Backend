@@ -12,8 +12,6 @@ class Student(db.Model):
     password = db.Column(db.String(64), nullable=False)
     class_standing = db.Column(db.String(2), nullable=False)
 
-    applications = db.relationship('Application', backref='applicant', lazy='dynamic')
-
     def __init__(self, name, email, password, class_standing):
         self.name = name
         self.email = email

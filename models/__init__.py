@@ -18,7 +18,7 @@ pwd_context = CryptContext(
 )
 
 from .Admin import Admin
-from .Application import Application
+from .JobApplication import JobApplication
 from .Employer import Employer
 from .JobPosting import JobPosting
 from .Student import Student
