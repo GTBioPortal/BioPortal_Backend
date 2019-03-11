@@ -17,7 +17,8 @@ class JobPosting(db.Model):
     resume = db.Column(db.Boolean, default=False)
     cover_letter = db.Column(db.Boolean, default=False)
     transcript = db.Column(db.Boolean, default=False)
-    author = db.Column(db.Integer, db.ForeignKey('employers.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('employers.id'))
+    author = db.relationship('Employer', backref='job_postings', foreign_keys=[author_id])
 
     def __init__(self, title, company, start_date, description, 
         deadline, resume, cover_letter, transcript, author):
@@ -27,7 +28,7 @@ class JobPosting(db.Model):
         self.resume = resume
         self.cover_letter = cover_letter
         self.transcript = transcript
-        self.author = author
+        self.author_id = author
         
     
     def save(self):
@@ -55,7 +56,7 @@ class JobPosting(db.Model):
             'resume': self.resume,
             'cover_letter': self.cover_letter,
             'transcript': self.transcript,
-            'author': self.author.id
+            'author': self.author_id
         }
 
     @staticmethod
