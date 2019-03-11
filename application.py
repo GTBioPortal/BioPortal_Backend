@@ -47,7 +47,7 @@ def create_job():
     auth = verify_auth(request, Employer)
     if auth['status'] == 'success':
         data = request.json
-        posting = JobPosting(data)
+        posting = JobPosting(data, auth['user_id'])
         posting.save()
         response = jsonify({
             'status': 'success'
