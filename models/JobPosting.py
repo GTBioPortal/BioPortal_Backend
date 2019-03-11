@@ -20,17 +20,15 @@ class JobPosting(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('employers.id'))
     author = db.relationship('Employer', backref='job_postings', foreign_keys=[author_id])
 
-    def __init__(self, title, company, start_date, description, 
-        deadline, resume, cover_letter, transcript, author):
-        self.title = title
-        self.company = company
-        self.description = description
-        self.resume = resume
-        self.cover_letter = cover_letter
-        self.transcript = transcript
+    def __init__(self, data, author):
+        self.title = data['title']
+        self.company = data['company']
+        self.description = data['description']
+        self.resume = data['resume']
+        self.transcript = data['transcript']
+        self.cover_letter = data['cover_letter']
         self.author_id = author
-        
-    
+
     def save(self):
         db.session.add(self)
         db.session.commit()
