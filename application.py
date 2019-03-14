@@ -176,5 +176,75 @@ def login():
         })
         return response, 401
 
+@application.route('/student/create', methods=['POST'])
+def create_student_account():
+    data = request.json
+    user = Student.query.filter_by(email=data.get('email')).first()
+    if not user:
+        try:
+            user = Student(
+                data['name'],
+                data['email'],
+                data['password'],
+                data['class']
+            )
+            user.save()
+            auth_token = user.encode_auth_token(user.id)
+            response = jsonify({
+                'status': 'success',
+                'message': 'Account created',
+                'auth_token': auth_token.decode()
+            })
+            return response, 200
+        except Exception as e:
+            raise e
+            response = jsonify({
+                'status': 'error',
+                'message': 'Error creating account',
+                'error': str(e)
+            })
+            return response, 401
+    else:
+        response = jsonify({
+            'status': 'error',
+            'message': 'User already exists'
+        })
+        return response, 202
+
+@application.route('/student/login', methods=['POST'])
+def student_login():
+    data = request.json
+    try:
+        user = Student.query.filter_by(email=data['email']).first()
+        if user:
+            if pwd_context.verify(data['password'], user.password):
+                auth_token = user.encode_auth_token(user.id)
+                if auth_token:
+                    response = jsonify({
+                        'status': 'success',
+                        'message': 'logged in',
+                        'auth_token': auth_token.decode()
+                    })
+                    return response, 200
+                else:
+                    response = jsonify({
+                        'status': 'error',
+                        'message': 'authentication error'
+                    })
+                    return response, 401
+            else:
+                response = jsonify({
+                    'status': 'error',
+                    'message': 'invalid credentials'
+                })
+                return response, 401
+    except Exception as e:
+        raise e
+        response = jsonify({
+            'status': 'error',
+            'message': 'error loging in'
+        })
+        return response, 401
+
 if __name__ == '__main__':
     application.run(debug=True)
