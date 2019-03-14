@@ -12,8 +12,6 @@ class Student(db.Model):
     password = db.Column(db.String(64), nullable=False)
     class_standing = db.Column(db.String(2), nullable=False)
 
-    applications = db.relationship('Application', backref='application', lazy='dynamic')
-
     def __init__(self, name, email, password, class_standing):
         self.name = name
         self.email = email
@@ -25,9 +23,9 @@ class Student(db.Model):
     def encode_auth_token(self, uid):
         try:
             payload = {
-                'expiration': datetime.datetime.utcnow() + datetime.timedelta(hours=2),
-                'issued_at': datetime.datetime.utcnow(),
-                'uid': uid
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2),
+                'iat': datetime.datetime.utcnow(),
+                'sub': uid
             }
             return jwt.encode(
                 payload,
@@ -40,8 +38,8 @@ class Student(db.Model):
     @staticmethod
     def decode_auth_token(token):
         try:
-            payload = jwt.decode(token, app.config.get('SECRET_KEY'))
-            return payload['uid']
+            payload = jwt.decode(token, os.environ['SECRET_KEY'])
+            return payload['sub']
         except jwt.ExpiredSignatureError:
             return 'Expired Token'
         except jwt.InvalidTokenError:

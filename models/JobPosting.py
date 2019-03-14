@@ -17,13 +17,18 @@ class JobPosting(db.Model):
     resume = db.Column(db.Boolean, default=False)
     cover_letter = db.Column(db.Boolean, default=False)
     transcript = db.Column(db.Boolean, default=False)
+    author_id = db.Column(db.Integer, db.ForeignKey('employers.id'))
+    author = db.relationship('Employer', backref='job_postings', foreign_keys=[author_id])
 
-    def __init__(self, data):
-        self.title = data.get('title')
-        self.company = data.get('company')
-        self.description = data.get('description')
-        
-    
+    def __init__(self, data, author):
+        self.title = data['title']
+        self.company = data['company']
+        self.description = data['description']
+        self.resume = data['resume']
+        self.transcript = data['transcript']
+        self.cover_letter = data['cover_letter']
+        self.author_id = author
+
     def save(self):
         db.session.add(self)
         db.session.commit()
@@ -37,6 +42,21 @@ class JobPosting(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    @property
+    def json(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'company': self.company,
+            'start_date': self.start_date,
+            'description': self.description,
+            'created_at': self.created_at,
+            'resume': self.resume,
+            'cover_letter': self.cover_letter,
+            'transcript': self.transcript,
+            'author': self.author_id
+        }
+
     @staticmethod
     def get_all_jobs():
         return JobPosting.query.all()
@@ -45,6 +65,7 @@ class JobPosting(db.Model):
     def get_job(id):
         return JobPosting.query.get(id)
 
+'''
 class JobPostingSchema(ma.Schema):
     id = fields.Integer(dump_only=True)
     title = fields.String(required=True)
@@ -56,3 +77,5 @@ class JobPostingSchema(ma.Schema):
     resume = fields.Boolean()
     cover_letter = fields.Boolean()
     transcript = fields.Boolean()
+    author = fields.Nested(EmployerSchema)
+'''

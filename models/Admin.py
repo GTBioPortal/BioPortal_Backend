@@ -3,7 +3,7 @@ import datetime
 from . import db
 
 
-class Employer(db.Model):
+class Admin(db.Model):
     __tablename__ = 'admins'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -21,13 +21,13 @@ class Employer(db.Model):
     def encode_auth_token(self, uid):
         try:
             payload = {
-                'expiration': datetime.datetime.utcnow() + datetime.timedelta(hours=2),
-                'issued_at': datetime.datetime.utcnow(),
-                'uid': uid
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2),
+                'iat': datetime.datetime.utcnow(),
+                'sub': uid
             }
             return jwt.encode(
                 payload,
-                app.config.get('SECRET_KEY'),
+                os.environ['SECRET_KEY'],
                 algorithm='HS256'
             )
         except Exception as e:
@@ -36,8 +36,8 @@ class Employer(db.Model):
     @staticmethod
     def decode_auth_token(token):
         try:
-            payload = jwt.decode(token, app.config.get('SECRET_KEY'))
-            return payload['uid']
+            payload = jwt.decode(token, os.environ['SECRET_KEY'])
+            return payload['sub']
         except jwt.ExpiredSignatureError:
             return 'Expired JWT'
         except jwt.InvalidTokenError:
