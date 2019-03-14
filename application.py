@@ -105,8 +105,8 @@ def get_job():
         return response
 
 
-@application.route('/account/create', methods=['POST'])
-def create_account():
+@application.route('/employer/create', methods=['POST'])
+def create_employer_account():
     data = request.json
     user = Employer.query.filter_by(email=data.get('email')).first()
     if not user:
@@ -141,8 +141,8 @@ def create_account():
         })
         return response, 202
 
-@application.route('/account/login', methods=['POST'])
-def login():
+@application.route('/employer/login', methods=['POST'])
+def employer_login():
     data = request.json
     try:
         user = Employer.query.filter_by(email=data['email']).first()
