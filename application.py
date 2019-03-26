@@ -92,12 +92,12 @@ def get_job(job_id):
         job_posting = JobPosting.get_job(job_id)
         response = jsonify({
             'status': 'success',
-            'data': job_posting
+            'data': job_posting.json
         })
         response.status_code = 200
         return response
     except Exception as e:
-        response = jsonfiy({
+        response = jsonify({
             'status': 'error',
             'message': 'could not find job'
         })
