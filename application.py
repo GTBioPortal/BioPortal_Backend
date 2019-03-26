@@ -85,11 +85,11 @@ def get_all_jobs():
 # TODO: Fix this to use /jobs/ route and
 # where this method is used when request type is POST
 # and above method used when request type is GET
-@application.route('/jobs/get', methods=['POST'])
-def get_job():
+@application.route('/jobs/<id>', methods=['GET'])
+def get_job(job_id):
     data = request.json
     try:
-        job_posting = JobPosting.get_job(data['id'])
+        job_posting = JobPosting.get_job(job_id)
         response = jsonify({
             'status': 'success',
             'data': job_posting

@@ -7,6 +7,20 @@ from . import pwd_context
 
 
 class Employer(db.Model):
+    """Employer database table.
+
+    Attributes:
+        id: A unique integer primary key
+        email: A string of the employer's email address 
+            (multiple users cannot use the same email address)
+        password: Plaintext employer's password
+        created_at: DateTime timestamp of user creation time/date
+        is_approved: Boolean indicating if Employer account
+            has been approved by an admin. Employers cannot login until approved.
+        name: Employer's full name
+        company: String containing name of company employer works for
+        company_description: String containing short description of company
+    """
     __tablename__ = 'employers'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -25,6 +39,10 @@ class Employer(db.Model):
         self.company = company
         self.company_description = company_description
 
+    """Creates a JWT for the employer with a 2hr expiration
+
+
+    """
     def encode_auth_token(self, uid):
         try:
             payload = {
