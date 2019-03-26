@@ -85,7 +85,7 @@ def get_all_jobs():
 # TODO: Fix this to use /jobs/ route and
 # where this method is used when request type is POST
 # and above method used when request type is GET
-@application.route('/jobs/<id>', methods=['GET'])
+@application.route('/jobs/<job_id>', methods=['GET'])
 def get_job(job_id):
     data = request.json
     try:
