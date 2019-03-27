@@ -18,7 +18,8 @@ class JobPosting(db.Model):
     cover_letter = db.Column(db.Boolean, default=False)
     transcript = db.Column(db.Boolean, default=False)
     author_id = db.Column(db.Integer, db.ForeignKey('employers.id'))
-    author = db.relationship('Employer', backref='job_postings', foreign_keys=[author_id])
+    author = db.relationship('Employer', backref='job_postings',
+        foreign_keys=[author_id])
 
     def __init__(self, data, author):
         self.title = data['title']

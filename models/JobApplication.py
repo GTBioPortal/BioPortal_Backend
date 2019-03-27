@@ -8,10 +8,13 @@ class JobApplication(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     applicant_id = db.Column(db.Integer, db.ForeignKey('students.id'))
-    applicant = db.relationship('Student', backref='applications', foreign_keys=[applicant_id])
-    timestamp = db.Column(db.DateTime, index=True, default=db.func.current_timestamp())
+    applicant = db.relationship('Student', backref='applications',
+        foreign_keys=[applicant_id])
+    timestamp = db.Column(db.DateTime, index=True,
+        default=db.func.current_timestamp())
     posting_id = db.Column(db.Integer, db.ForeignKey('job_postings.id'))
-    job_posting = db.relationship('JobPosting', backref='applications', foreign_keys=[posting_id])
+    job_posting = db.relationship('JobPosting', backref='applications',
+        foreign_keys=[posting_id])
 
     def __init__(self, applicant, job_posting):
         self.applicant_id = applicant
