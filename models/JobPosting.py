@@ -64,18 +64,3 @@ class JobPosting(db.Model):
     @staticmethod
     def get_job(id):
         return JobPosting.query.get(id)
-
-'''
-class JobPostingSchema(ma.Schema):
-    id = fields.Integer(dump_only=True)
-    title = fields.String(required=True)
-    company = fields.String(required=True)
-    description = fields.String()
-    start_date = fields.DateTime()
-    deadline = fields.DateTime()
-    created_at = fields.DateTime()
-    resume = fields.Boolean()
-    cover_letter = fields.Boolean()
-    transcript = fields.Boolean()
-    author = fields.Nested(EmployerSchema)
-'''

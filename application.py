@@ -82,22 +82,19 @@ def get_all_jobs():
         response.status_code = 401
         return response
 
-# TODO: Fix this to use /jobs/ route and
-# where this method is used when request type is POST
-# and above method used when request type is GET
-@application.route('/jobs/get', methods=['POST'])
-def get_job():
+@application.route('/jobs/<job_id>', methods=['GET'])
+def get_job(job_id):
     data = request.json
     try:
-        job_posting = JobPosting.get_job(data['id'])
+        job_posting = JobPosting.get_job(job_id)
         response = jsonify({
             'status': 'success',
-            'data': job_posting
+            'data': job_posting.json
         })
         response.status_code = 200
         return response
     except Exception as e:
-        response = jsonfiy({
+        response = jsonify({
             'status': 'error',
             'message': 'could not find job'
         })

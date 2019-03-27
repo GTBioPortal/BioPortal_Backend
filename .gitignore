@@ -4,3 +4,4 @@ index.yaml
 *.pyc
 */__pycache__
 migrations/*
+.vscode/*
