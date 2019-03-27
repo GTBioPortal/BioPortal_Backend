@@ -41,7 +41,8 @@ class Employer(db.Model):
 
     """Creates a JWT for the employer with a 2hr expiration
 
-
+    Args:
+        uid: Employer's id
     """
     def encode_auth_token(self, uid):
         try:
@@ -56,7 +57,6 @@ class Employer(db.Model):
                 algorithm='HS256'
             )
         except Exception as e:
-            raise e
             return e
 
     def save(self):
