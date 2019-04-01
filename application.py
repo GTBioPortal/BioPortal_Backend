@@ -9,6 +9,7 @@ from models.Employer import Employer
 
 
 def verify_auth(request, user_type):
+    
     auth_header = request.headers.get('Authorization')
     if auth_header:
         auth_token = auth_header.split(' ')[1]
