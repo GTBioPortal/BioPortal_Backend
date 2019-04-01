@@ -9,7 +9,14 @@ from models.Employer import Employer
 
 
 def verify_auth(request, user_type):
-    
+    """Gets JWT from request authorization header and verifies it
+
+    Args:
+        request (Flask.request): HTTP POST request
+        user_type (object): Type of user to auth. Admin, Employer, or Student.
+    Returns:
+        Dictionary with user id and email or error message if JWT is invalid.
+    """
     auth_header = request.headers.get('Authorization')
     if auth_header:
         auth_token = auth_header.split(' ')[1]
@@ -62,12 +69,6 @@ def create_job():
 def get_all_jobs():
     try:
         job_postings = JobPosting.get_all_jobs()
-        '''
-        response = jsonify({
-            'status': 'success',
-            'jobs': JobPostingSchema(many=True).dump(job_postings).data
-        })
-        '''
         response = jsonify({
             'status': 'success',
             'jobs': [job.json for job in job_postings]
