@@ -4,6 +4,16 @@ from . import db
 
 
 class JobApplication(db.Model):
+    """Job Application database schema
+
+    Attributes:
+        id (int): Unique id of Job Application
+        applicant_id (int): id of Student that applied
+        applicant (Student): Student that created this application
+        timestamp (DateTime): Timestamp when the student applied 
+        posting_id (int): id of JobPosting this application was for
+        job_posting (JobPosting): JobPosting that this application was for
+    """
     __tablename__ = 'job_applications'
 
     id = db.Column(db.Integer, primary_key=True)

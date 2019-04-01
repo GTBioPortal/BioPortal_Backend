@@ -5,6 +5,24 @@ from marshmallow import Schema, fields, pre_load, validate
 
 
 class JobPosting(db.Model):
+    """Job Posting database schema
+
+    Attributes:
+        id (int): Unique id of Job Posting
+        title (str): Postion title 
+        company (str): Company hiring for this position
+        start_date (DateTime): Anticipated start date of this position
+        description (str): Detailed description of this position
+        deadline (DateTime): Deadline to accept applications until
+        created_at (DateTime): Timestamp when employer created this job posting.
+        resume (bool): Indicates if resume must be included with application
+        cover_letter (bool): Indicates if cover letters must be included with
+            applications.
+        transcript (boot): Indicates if transcripts must be included with
+            applications.
+        author_id (int): ID of Employer who created this job posting.
+        author (Employer): Employer who created this job posting.
+    """
     __tablename__ = 'job_postings'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -45,6 +63,8 @@ class JobPosting(db.Model):
 
     @property
     def json(self):
+        """Returns only necessary attributes for front-end rendering
+        """
         return {
             'id': self.id,
             'title': self.title,
@@ -60,8 +80,15 @@ class JobPosting(db.Model):
 
     @staticmethod
     def get_all_jobs():
+        """Returns list of all JobPostings in database
+        """
         return JobPosting.query.all()
 
     @staticmethod
     def get_job(id):
+        """Returns single JobPosting from database from it's uid.
+
+        Args:
+            id (str): uid of JobPosting to retrieve from db.
+        """
         return JobPosting.query.get(id)
