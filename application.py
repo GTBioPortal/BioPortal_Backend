@@ -123,7 +123,7 @@ def create_employer_account():
             response = jsonify({
                 'status': 'success',
                 'message': 'Account created',
-                'auth_token': auth_token
+                'auth_token': auth_token.decode()
             })
             return response, 200
         except Exception as e:
@@ -153,7 +153,7 @@ def employer_login():
                     response = jsonify({
                         'status': 'success',
                         'message': 'logged in',
-                        'auth_token': auth_token
+                        'auth_token': auth_token.decode()
                     })
                     return response, 200
                 else:
