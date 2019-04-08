@@ -105,6 +105,15 @@ def get_job(job_id):
         response.status_code = 401
         return response
 
+@application.route('/employer/jobs', methods=['GET'])
+def get_employer_postings():
+    auth = verify_auth(request, Employer)
+    if auth['status'] == 'success':
+        employer = Employer.query.get(auth['data']['user_id'])
+        return employer.job_postings
+    else:
+        return jsonify(auth), 401
+
 
 @application.route('/employer/create', methods=['POST'])
 def create_employer_account():
