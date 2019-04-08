@@ -308,7 +308,7 @@ def get_files():
         files = student.user_files
         response = jsonify({
             'status': 'success',
-            'files': files
+            'files': [f.json for f in files]
         })
         return response, 200
     else:

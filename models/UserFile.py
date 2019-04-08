@@ -53,6 +53,15 @@ class UserFile(db.Model):
         except Exception as e:
             raise e
 
+    @property
+    def json(self):
+        return {
+            'id': self.id,
+            'document_type': self.document_type,
+            'location': self.location,
+            'name': self.name
+        }
+
     def save(self):
         db.session.add(self)
         db.session.commit()
