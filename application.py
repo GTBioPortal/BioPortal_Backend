@@ -280,7 +280,7 @@ def apply_to_job(job_id):
 def upload_file():
     auth = verify_auth(request, Student)
     if auth['status'] == 'success':
-        print(request.json)
+        print(request.form)
         data_file = request.files['file']
         user_file = UserFile(auth['data']['user_id'],
             data['file_type'], data_file, data['file_name'])
