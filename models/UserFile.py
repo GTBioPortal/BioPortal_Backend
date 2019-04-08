@@ -40,6 +40,7 @@ class UserFile(db.Model):
                 aws_secret_access_key=os.environ['S3_SECRET_KEY']
             )
             data = document.read()
-            s3.Bucket('gtbioportal').put_object(Key='fname2.pdf', Body=data)
+            s3.upload_fileobj(data, 'gtbioportal', 'documents/fname.pdf')
+            #s3.Bucket('gtbioportal').put_object(Key='fname2.pdf', Body=data)
         except Exception as e:
             raise e
