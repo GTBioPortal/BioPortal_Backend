@@ -245,5 +245,37 @@ def student_login():
         })
         return response, 401
 
+@application.route('/jobs/<job_id>/apply', methods=['POST'])
+def apply_to_job(job_id):
+    auth = verify_auth(request, Student)
+    if auth['status'] == 'success':
+        data = request.json
+        job_application = JobApplication(auth['data']['user_id'],
+            job_id)
+        job_application.save()
+        response = jsonify({
+            'status': 'success'
+        })
+        return response, 200
+    else:
+        return jsonify(auth), 401
+
+@application.route('/upload', methods=['POST'])
+def upload_file():
+    auth = verify_auth(request, Student)
+    if auth['status'] == 'success':
+        data = request.json
+        data_file = request.files['file']
+        user_file = UserFile(auth['data']['user_id'],
+            data['file_type'], data_file, 'test_file.pdf',
+            'Test File')
+        response = jsonify({
+            'status': 'success'
+        })
+        return response, 200
+    else:
+        return jsonify(auth), 401
+
+
 if __name__ == '__main__':
     application.run(debug=True)

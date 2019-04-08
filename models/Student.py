@@ -63,6 +63,15 @@ class Student(db.Model):
         except Exception as e:
             return e
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self, data):
+        for key, item in data.items():
+            setattr(self, key, item)
+        db.session.commit()
+
     @staticmethod
     def decode_auth_token(token):
         """
