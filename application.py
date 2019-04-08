@@ -4,9 +4,10 @@ from config import app_config
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from models import db, application, pwd_context
-from models.JobPosting import JobPosting
 from models.Employer import Employer
-
+from models.JobPosting import JobPosting
+from models.Student import Student
+from models.UserFile import UserFile
 
 def verify_auth(request, user_type):
     """Gets JWT from request authorization header and verifies it
