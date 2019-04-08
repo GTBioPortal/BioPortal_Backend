@@ -19,6 +19,7 @@ def verify_auth(request, user_type):
         Dictionary with user id and email or error message if JWT is invalid.
     """
     auth_header = request.headers.get('Authorization')
+    print auth_header
     if auth_header:
         auth_token = auth_header.split(' ')[1]
     else:
