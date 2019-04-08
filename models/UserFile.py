@@ -1,6 +1,7 @@
 import boto3
 import datetime
 import os
+import uuid
 
 from . import db
 
@@ -39,8 +40,8 @@ class UserFile(db.Model):
                 aws_access_key_id=os.environ['S3_ACCESS_KEY'],
                 aws_secret_access_key=os.environ['S3_SECRET_KEY']
             )
-            #data = document.read()
-            s3.meta.client.upload_fileobj(document, 'gtbioportal', 'documents/fname.pdf')
-            #s3.Bucket('gtbioportal').put_object(Key='fname2.pdf', Body=data)
+            new_fname = str(uuid.uuid4().hex[:6]) + '.pdf'
+            s3.meta.client.upload_fileobj(document, 'gtbioportal', 
+                'documents/' + new_fname)
         except Exception as e:
             raise e
