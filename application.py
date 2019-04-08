@@ -282,6 +282,7 @@ def upload_file():
     if auth['status'] == 'success':
         data = request.json
         data_file = request.files['file']
+        print(data)
         user_file = UserFile(auth['data']['user_id'],
             data['file_type'], data_file, data['file_name'])
         response = jsonify({
