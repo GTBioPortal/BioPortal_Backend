@@ -21,7 +21,7 @@ class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
+    password = db.Column(db.String(256), nullable=False)
     class_standing = db.Column(db.String(2), nullable=False)
 
     def __init__(self, name, email, password, class_standing):
