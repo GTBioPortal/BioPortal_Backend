@@ -291,6 +291,19 @@ def upload_file():
     else:
         return jsonify(auth), 401
 
+@application.route('/student/files', methods=['GET'])
+def get_files():
+    auth = verify_auth(request, Student)
+    if auth['status'] == 'success':
+        student = Student.query.get(auth['data']['user_id'])
+        files = student.user_files
+        response = jsonify({
+            'status': 'success',
+            'files': files
+        })
+        return response, 200
+    else:
+        return jsonify(auth), 401
 
 if __name__ == '__main__':
     application.run(debug=True)
