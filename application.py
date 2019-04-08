@@ -110,8 +110,13 @@ def get_employer_postings():
     auth = verify_auth(request, Employer)
     if auth['status'] == 'success':
         employer = Employer.query.get(auth['data']['user_id'])
-        print(employer.job_postings)
-        return jsonify(employer.job_postings), 200
+        job_postings = employer.job_postings
+        response = jsonify({
+            'status': 'success',
+            'jobs': [job.json for job in job_postings]
+        })
+        response.status_code = 200
+        return response
     else:
         return jsonify(auth), 401
 
