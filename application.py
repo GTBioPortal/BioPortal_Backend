@@ -282,12 +282,21 @@ def upload_file():
     if auth['status'] == 'success':
         data = request.form
         data_file = request.files['file']
-        user_file = UserFile(auth['data']['user_id'],
-            data['file_type'], data_file, data['file_name'])
-        response = jsonify({
-            'status': 'success'
-        })
-        return response, 200
+        try:
+            user_file = UserFile(auth['data']['user_id'],
+                data['file_type'], data_file, data['file_name'])
+            user_file.save()
+
+            response = jsonify({
+                'status': 'success'
+            })
+            return response, 200
+        except Exception as e:
+            response = jsonify({
+                'status': 'error',
+                'message': 'Could not upload file'
+            })
+            return response, 500
     else:
         return jsonify(auth), 401
 
