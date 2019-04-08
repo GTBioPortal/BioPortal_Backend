@@ -34,6 +34,10 @@ class UserFile(db.Model):
     name = db.Column(db.String(64), nullable=False)
 
     def __init__(self, author, document_type, document, fname, name):
+        supported_types = {'resume', 'cover_letter', 'transcript'}
+        if document_type not in supported_types:
+            raise ValueError('Invalid document type: Supported types are' +
+                'cover_letter, resume, or transcript')
         try:
             s3 = boto3.resource('s3',
                 region_name='us-east-1',
@@ -42,5 +46,27 @@ class UserFile(db.Model):
             )
             key = 'documents/' + str(uuid.uuid4().hex[:32]) + '.pdf'
             s3.meta.client.upload_fileobj(document, 'gtbioportal', key)
+            self.author_id = author
+            self.document_type = document_type
+            self.location = key
+            self.name = name
         except Exception as e:
             raise e
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self, data):
+        for key, item in data.items():
+            setattr(self, key, item)
+        db.session.commit()
+
+    @staticmethod
+    def get_documents_by_user(uid):
+        """Returns all documents a user has uploaded
+
+        Args:
+            id (str): uid of UserFile to retrieve
+        """
+        return UserFile.query.filter_by(author_id=uid)
