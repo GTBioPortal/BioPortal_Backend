@@ -33,7 +33,7 @@ class UserFile(db.Model):
     location = db.Column(db.String(64), nullable=False)
     name = db.Column(db.String(64), nullable=False)
 
-    def __init__(self, author, document_type, document, fname, name):
+    def __init__(self, author, document_type, document, name):
         supported_types = {'resume', 'cover_letter', 'transcript'}
         if document_type not in supported_types:
             raise ValueError('Invalid document type: Supported types are' +
