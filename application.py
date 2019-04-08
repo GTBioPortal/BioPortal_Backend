@@ -283,8 +283,7 @@ def upload_file():
         data = request.json
         data_file = request.files['file']
         user_file = UserFile(auth['data']['user_id'],
-            'resume', data_file, 'test_file.pdf',
-            'Test File')
+            data['file_type'], data_file, data['file_name'])
         response = jsonify({
             'status': 'success'
         })
