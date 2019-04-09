@@ -8,6 +8,7 @@ from models.Employer import Employer
 from models.JobPosting import JobPosting
 from models.Student import Student
 from models.UserFile import UserFile
+from models.JobApplication import JobApplication
 
 def verify_auth(request, user_type):
     """Gets JWT from request authorization header and verifies it
