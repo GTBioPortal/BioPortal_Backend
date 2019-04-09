@@ -138,8 +138,7 @@ def get_employer_postings():
             'status': 'success',
             'jobs': [job.json for job in job_postings]
         })
-        response.status_code = 200
-        return response
+        return response, 200
     else:
         return jsonify(auth), 401
 
