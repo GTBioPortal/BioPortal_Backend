@@ -299,7 +299,7 @@ def apply_to_job(job_id):
         if not resume:
             resume = None
         job_application = JobApplication(auth['data']['user_id'],
-            resume, transcript, cover_letter
+            job_id, resume, transcript, cover_letter
         )
         job_application.save()
         response = jsonify({
