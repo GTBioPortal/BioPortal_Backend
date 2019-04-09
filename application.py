@@ -86,20 +86,45 @@ def get_all_jobs():
 
 @application.route('/jobs/<job_id>', methods=['GET'])
 def get_job(job_id):
-    data = request.json
     try:
         job_posting = JobPosting.get_job(job_id)
+    except Exception as e:
+        response = jsonify({
+            'status': 'error',
+            'message': 'could not find job posting'
+        })
+        return response, 404
+
+    if request.method == 'PUT':
+        auth = verify_auth(request, Employer)
+        employer_id = auth['data']['user_id']
+        if job_posting.author_id == employer_id:
+            data = request.json
+            try:
+                job_posting.update(data)
+                response = jsonify({
+                    'status': 'success',
+                    'job_posting': job_posting.json
+                })
+                return response, 200
+            except Exception as e:
+                response = jsonify({
+                    'status': 'error',
+                    'message': 'Could not update job posting'
+                })
+                return response, 500
+        else:
+            response = jsonify({
+                'status': 'error',
+                'message': 'User did not create this job posting'
+            })
+            return response, 401
+    else:
         response = jsonify({
             'status': 'success',
             'data': job_posting.json
         })
         return response, 200
-    except Exception as e:
-        response = jsonify({
-            'status': 'error',
-            'message': 'could not find job'
-        })
-        return response, 401
 
 @application.route('/jobs/<job_id>/applications', methods=['GET'])
 def get_applications(job_id):
