@@ -25,10 +25,20 @@ class JobApplication(db.Model):
     posting_id = db.Column(db.Integer, db.ForeignKey('job_postings.id'))
     job_posting = db.relationship('JobPosting', backref='applications',
         foreign_keys=[posting_id])
+    resume_id = db.Column(db.Integer, db.ForeignKey('user_files.id'), 
+        nullable=True)
+    transcript_id = db.Column(db.Integer, db.ForeignKey('user_files.id'),
+        nullable=True)
+    cover_letter_id = db.Column(db.Integer, db.ForeignKey('user_files.id'),
+        nullable=True)
 
-    def __init__(self, applicant, job_posting):
+    def __init__(self, applicant, job_posting, resume, 
+        transcript, cover_letter):
         self.applicant_id = applicant
         self.posting_id = job_posting
+        self.resume_id = resume
+        self.transcript_id = transcript
+        self.cover_letter_id = cover_letter
 
     def save(self):
         db.session.add(self)
@@ -48,5 +58,8 @@ class JobApplication(db.Model):
         return {
             'id': self.id,
             'applicant': applicant.name,
-            'timestamp': self.timestamp
+            'timestamp': self.timestamp,
+            'resume': self.resume_id,
+            'cover_letter': self.cover_letter_id,
+            'transcript': self.transcript_id
         }

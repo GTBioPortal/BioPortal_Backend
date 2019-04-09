@@ -288,8 +288,18 @@ def apply_to_job(job_id):
     auth = verify_auth(request, Student)
     if auth['status'] == 'success':
         data = request.json
+        transcript = data.get('transcript', None)
+        if not transcript: 
+            transcript = None
+        cover_letter = data.get('cover_letter', None)
+        if not cover_letter:
+            cover_letter = None
+        resume = data.get('resume', None)
+        if not resume:
+            resume = None
         job_application = JobApplication(auth['data']['user_id'],
-            job_id)
+            resume, transcript, cover_letter
+        )
         job_application.save()
         response = jsonify({
             'status': 'success'
