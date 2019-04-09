@@ -75,16 +75,14 @@ def get_all_jobs():
             'status': 'success',
             'jobs': [job.json for job in job_postings]
         })
-        response.status_code = 200
-        return response
+        return response, 200
     except Exception as e:
         raise e
         response = jsonify({
             'status': 'error',
             'message': 'could not fetch job postings'
         })
-        response.status_code = 401
-        return response
+        return response, 401
 
 @application.route('/jobs/<job_id>', methods=['GET'])
 def get_job(job_id):
@@ -95,18 +93,15 @@ def get_job(job_id):
             'status': 'success',
             'data': job_posting.json
         })
-        response.status_code = 200
-        return response
+        return response, 200
     except Exception as e:
         response = jsonify({
             'status': 'error',
             'message': 'could not find job'
         })
-        response.status_code = 401
-        return response
+        return response, 401
 
-"""
-@application.route('/jobs/<job_id>/applications', method=['GET'])
+@application.route('/jobs/<job_id>/applications', methods=['GET'])
 def get_applications(job_id):
     auth = verify_auth(request, Employer)
     employer_id = auth['data']['user_id']
@@ -131,7 +126,6 @@ def get_applications(job_id):
             'message': 'could not get applications'
         })
         return response, 401
-"""
 
 @application.route('/employer/jobs', methods=['GET'])
 def get_employer_postings():
