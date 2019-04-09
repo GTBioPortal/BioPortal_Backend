@@ -111,7 +111,7 @@ def get_applications(job_id):
     employer_id = auth['data']['user_id']
     try:
         job_posting = JobPosting.get_job(job_id)
-        if job_posting.author_id = employer_id:
+        if job_posting.author_id == employer_id:
             applications = JobApplication.query.filter_by(posting_id=job_id)
             response = jsonify({
                 'status': 'success',
