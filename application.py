@@ -105,6 +105,33 @@ def get_job(job_id):
         response.status_code = 401
         return response
 
+@application.route('/jobs/<job_id>/applications', method=['GET'])
+def get_applications(job_id):
+    auth = verify_auth(request, Employer)
+    employer_id = auth['data']['user_id']
+    try:
+        job_posting = JobPosting.get_job(job_id)
+        if job_posting.author_id = employer_id:
+            applications = JobApplication.query.filter_by(posting_id=job_id)
+            response = jsonify({
+                'status': 'success',
+                'applications': [app.json for app in applications]
+            })
+            return response, 200
+        else:
+            response = jsonify({
+                'status': 'error',
+                'message': 'User did not create this job posting'
+            })
+            return response, 401
+    except Exception as e:
+        response = jsonify({
+            'status': 'error',
+            'message': 'could not get applications'
+        })
+        return response, 401
+
+
 @application.route('/employer/jobs', methods=['GET'])
 def get_employer_postings():
     auth = verify_auth(request, Employer)

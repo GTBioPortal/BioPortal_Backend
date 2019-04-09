@@ -42,3 +42,11 @@ class JobApplication(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+    @property
+    def json(self):
+        return {
+            'id': self.id,
+            'applicant': applicant.name,
+            'timestamp': self.timestamp
+        }
