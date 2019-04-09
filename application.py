@@ -115,7 +115,7 @@ def get_applications(job_id):
             applications = JobApplication.query.filter_by(posting_id=job_id)
             response = jsonify({
                 'status': 'success',
-                'applications': [app.json for app in applications]
+                'applications': [job_app.json for job_app in applications]
             })
             return response, 200
         else:
