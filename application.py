@@ -84,7 +84,7 @@ def get_all_jobs():
         })
         return response, 401
 
-@application.route('/jobs/<job_id>', methods=['GET'])
+@application.route('/jobs/<job_id>', methods=['GET', 'PUT'])
 def get_job(job_id):
     try:
         job_posting = JobPosting.get_job(job_id)
