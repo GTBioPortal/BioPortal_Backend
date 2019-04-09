@@ -121,6 +121,7 @@ def get_applications(job_id):
             })
             return response, 401
     except Exception as e:
+        raise e
         response = jsonify({
             'status': 'error',
             'message': 'could not get applications'
@@ -132,6 +133,7 @@ def get_employer_postings():
     auth = verify_auth(request, Employer)
     if auth['status'] == 'success':
         employer = Employer.query.get(auth['data']['user_id'])
+        print(employer.id)
         job_postings = employer.job_postings
         print(len(job_postings))
         response = jsonify({
