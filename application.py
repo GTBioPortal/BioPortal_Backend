@@ -105,6 +105,7 @@ def get_job(job_id):
         response.status_code = 401
         return response
 
+"""
 @application.route('/jobs/<job_id>/applications', method=['GET'])
 def get_applications(job_id):
     auth = verify_auth(request, Employer)
@@ -130,7 +131,7 @@ def get_applications(job_id):
             'message': 'could not get applications'
         })
         return response, 401
-
+"""
 
 @application.route('/employer/jobs', methods=['GET'])
 def get_employer_postings():
