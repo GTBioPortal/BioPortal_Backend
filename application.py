@@ -24,7 +24,6 @@ def verify_auth(request, user_type):
         auth_token = auth_header.split(' ')[1]
     else:
         auth_token = None
-    print(auth_token)
     if auth_token:
         resp = user_type.decode_auth_token(auth_token)
         if not isinstance(resp, str):
@@ -134,6 +133,7 @@ def get_employer_postings():
     if auth['status'] == 'success':
         employer = Employer.query.get(auth['data']['user_id'])
         job_postings = employer.job_postings
+        print(len(job_postings))
         response = jsonify({
             'status': 'success',
             'jobs': [job.json for job in job_postings]
