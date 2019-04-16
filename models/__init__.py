@@ -24,3 +24,4 @@ from .JobApplication import JobApplication
 from .Employer import Employer
 from .JobPosting import JobPosting
 from .Student import Student
+from .utils import *

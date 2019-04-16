@@ -17,7 +17,8 @@ class JobApplication(db.Model):
     __tablename__ = 'job_applications'
 
     id = db.Column(db.Integer, primary_key=True)
-    applicant_id = db.Column(db.Integer, db.ForeignKey('students.id'))
+    applicant_id = db.Column(db.String(16), db.ForeignKey('students.id'),
+        nullable=False)
     applicant = db.relationship('Student', backref='applications',
         foreign_keys=[applicant_id])
     timestamp = db.Column(db.DateTime, index=True,

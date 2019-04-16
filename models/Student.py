@@ -4,6 +4,7 @@ import os
 
 from . import db
 from . import pwd_context
+from .utils import random_key
 
 
 class Student(db.Model):
@@ -18,7 +19,8 @@ class Student(db.Model):
     """
     __tablename__ = 'students'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(16), primary_key=True, autoincrement=False,
+        nullable=False)
     name = db.Column(db.String(64), nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
@@ -67,8 +69,15 @@ class Student(db.Model):
             return e
 
     def save(self):
-        db.session.add(self)
-        db.session.commit()
+        success = False
+        while not success:
+            self.id = random_key(16)
+            db.session.add(self)
+            try:
+                db.session.commit()
+                success = True
+            except:
+                db.session.rollback()
 
     def update(self, data):
         for key, item in data.items():

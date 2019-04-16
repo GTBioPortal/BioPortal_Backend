@@ -24,7 +24,7 @@ class UserFile(db.Model):
     __tablename__ = 'user_files'
 
     id = db.Column(db.Integer, primary_key=True)
-    author_id = db.Column(db.Integer, db.ForeignKey('students.id'))
+    author_id = db.Column(db.String, db.ForeignKey('students.id'), nullable=False)
     author = db.relationship('Student', backref='user_files',
         foreign_keys=[author_id])
     uploaded_at = db.Column(db.DateTime, index=True,
