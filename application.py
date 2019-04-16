@@ -36,6 +36,7 @@ def verify_auth(request, user_type):
                 }
             }
             return response
+        print(resp)
         response = {
             'status': 'error',
             'message': resp
@@ -302,6 +303,8 @@ def student_login():
                     'message': 'invalid credentials'
                 })
                 return response, 401
+        else:
+            print("LOGIN ERROR")
     except Exception as e:
         raise e
         response = jsonify({
@@ -358,6 +361,95 @@ def upload_file():
             return response, 500
     else:
         return jsonify(auth), 401
+
+
+def get_file_from_s3(file_path):
+    s3 = boto3.resource('s3',
+        region_name='us-east-1',
+        aws_access_key_id=os.environ['S3_ACCESS_KEY'],
+        aws_secret_access_key=os.environ['S3_SECRET_KEY']
+    )
+    user_file = s3.meta.client.download_fileobj('gtbioportal', file_path)
+    return user_file
+
+@application.route('/files/<file_id>', methods=['POST'])
+def get_file(file_id):
+    """Returns file with given id from location in S3.
+
+    Uses authentication to check if requesting user is the
+    student who uploaded the file or an employer that owns a
+    job posting where an application exists containing this file
+    """
+    data = request.get_json()
+    try:
+        user_file = UserFile.query.get(file_id)
+    except Exception as e:
+        response = jsonify({
+            'status': 'error',
+            'message': 'file not found'
+        })
+        return response, 404
+    if 'application_id' in data:
+        auth = verify_auth(request, Employer)
+        try:
+            job_app = JobApplication.query.get(data['application_id'])
+            job_posting = job_app.job_posting
+            if job_posting.author_id == auth['data']['user_id']:
+                fdata = get_file_from s3(user_file.location)
+                response = make_response(fdata['Body'].read())
+                response.headers['Content-Type'] = 'application/pdf'
+                return response
+        except Exception as e:
+            response = jsonify({
+                'status': 'error',
+                'message': 'could not find application'
+            })
+            return response, 404
+    else:
+        auth = verify_auth(request, Student)
+        if auth['status'] == 'success':
+            if user_file.author_id == auth['data']['user_id']:
+                fdata = get_file_from_s3(user_file.location)
+                response = make_response(fdata['Body'].read())
+                response.headers['Content-Type'] = 'application/pdf'
+                return response
+        response = jsonify({
+            'status': 'error',
+            'message': 'access denied'
+        })
+        return reponse, 401
+
+
+    try:
+        user_file = UserFile.query.get(file_id)
+        auth = verify_auth(request, Student)
+        if auth['status'] == 'success':
+            if user_file.author_id == auth['data']['user_id']:
+                fdata = get_file_from_s3(file_id)
+        else:
+            auth = verify_auth(request, Employer)
+            if auth['status'] == 'success':
+                employer = Employer.query.get(auth['data']['user_id'])
+                job_postings = employer.job_postings
+                for posting in job_postings:
+
+
+
+    except Exception as e:
+        response = jsonify({
+            'status': 'error',
+            'message': 'File does not exist'
+        })
+        return response, 500
+
+    auth = verify_auth(request, Student)
+    if auth['status'] == 'success':
+        student = Student.query.get(auth['data']['user_id'])
+    else:
+        auth = verify_auth(request, Employer)
+        if auth['status'] == 'success':
+            employer = Employer.query.get(auth['data']['user_id'])
+
 
 @application.route('/student/files', methods=['GET'])
 def get_files():
