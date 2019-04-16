@@ -4,6 +4,7 @@ import os
 import uuid
 
 from . import db
+from .utils import random_key
 
 
 class UserFile(db.Model):
@@ -23,8 +24,9 @@ class UserFile(db.Model):
     """
     __tablename__ = 'user_files'
 
-    id = db.Column(db.Integer, primary_key=True)
-    author_id = db.Column(db.String, db.ForeignKey('students.id'), nullable=False)
+    id = db.Column(db.String(16), primary_key=True, autoincrement=False,
+        nullable=False)
+    author_id = db.Column(db.String(16), db.ForeignKey('students.id'), nullable=False)
     author = db.relationship('Student', backref='user_files',
         foreign_keys=[author_id])
     uploaded_at = db.Column(db.DateTime, index=True,
@@ -63,8 +65,19 @@ class UserFile(db.Model):
         }
 
     def save(self):
-        db.session.add(self)
-        db.session.commit()
+        success = False
+        attempts = 0
+        while not success:
+            self.id = random_key(16)
+            if attempts > 4:
+                raise TimeoutError("Too many attempts")
+            db.session.add(self)
+            try:
+                db.session.commit()
+                success = True
+            except:
+                attempts += 1
+                db.session.rollback()
 
     def update(self, data):
         for key, item in data.items():

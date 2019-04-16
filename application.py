@@ -84,18 +84,6 @@ def get_all_jobs():
         })
         return response, 401
 
-@application.route('/cookie_test/', methods=['PUT', 'GET'])
-def cookie_test():
-    if request.method == 'GET':
-        response = jsonify({
-            'status': 'success',
-            'data': 'testing'
-        })
-        response.set_cookie('jwt', 'token_val', max_age=7200, httponly=True)
-        return response, 200
-    else:
-        print(request.cookies)
-
 @application.route('/jobs/<job_id>', methods=['GET', 'PUT'])
 def get_job(job_id):
     try:

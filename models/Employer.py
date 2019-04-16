@@ -4,6 +4,7 @@ import os
 
 from . import db
 from . import pwd_context
+from .utils import random_key
 
 
 class Employer(db.Model):
@@ -22,7 +23,8 @@ class Employer(db.Model):
     """
     __tablename__ = 'employers'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(16), primary_key=True, autoincrement=False,
+        nullable=False)
     email = db.Column(db.String(256), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, 
@@ -77,8 +79,19 @@ class Employer(db.Model):
             return e
 
     def save(self):
-        db.session.add(self)
-        db.session.commit()
+        success = False
+        attempts = 0
+        while not success:
+            self.id = random_key(16)
+            if attempts > 4:
+                raise TimeoutError("Too many attempts")
+            db.session.add(self)
+            try:
+                db.session.commit()
+                success = True
+            except:
+                attempts += 1
+                db.session.rollback()
 
     def update(self, data):
         for key, item in data.items():

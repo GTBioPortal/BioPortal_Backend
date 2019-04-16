@@ -70,13 +70,17 @@ class Student(db.Model):
 
     def save(self):
         success = False
+        attempts = 0
         while not success:
             self.id = random_key(16)
+            if attempts > 4:
+                raise TimeoutError("Too many attempts")
             db.session.add(self)
             try:
                 db.session.commit()
                 success = True
             except:
+                attempts += 1
                 db.session.rollback()
 
     def update(self, data):

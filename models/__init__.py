@@ -7,7 +7,7 @@ from passlib.context import CryptContext
 import os
 
 application = Flask(__name__)
-CORS(application, support_credentials=True)
+CORS(application)
 application.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
 application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(application)

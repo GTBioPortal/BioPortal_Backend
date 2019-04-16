@@ -1,6 +1,7 @@
 import datetime
 
 from . import db, ma
+from .utils import random_key
 from marshmallow import Schema, fields, pre_load, validate
 
 
@@ -25,7 +26,8 @@ class JobPosting(db.Model):
     """
     __tablename__ = 'job_postings'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(16), primary_key=True, autoincrement=False,
+        nullable=False)
     title = db.Column(db.Text, nullable=False)
     company = db.Column(db.String(128), nullable=False)
     start_date = db.Column(db.DateTime, nullable=False)
@@ -36,7 +38,7 @@ class JobPosting(db.Model):
     resume = db.Column(db.Boolean, default=False)
     cover_letter = db.Column(db.Boolean, default=False)
     transcript = db.Column(db.Boolean, default=False)
-    author_id = db.Column(db.Integer, db.ForeignKey('employers.id'))
+    author_id = db.Column(db.String(16), db.ForeignKey('employers.id'))
     author = db.relationship('Employer', backref='job_postings',
         foreign_keys=[author_id])
 
@@ -55,8 +57,19 @@ class JobPosting(db.Model):
         self.location = data['location']
 
     def save(self):
-        db.session.add(self)
-        db.session.commit()
+        success = False
+        attempts = 0
+        while not success:
+            self.id = random_key(16)
+            if attempts > 4:
+                raise TimeoutError("Too many attempts")
+            db.session.add(self)
+            try:
+                db.session.commit()
+                success = True
+            except:
+                attempts += 1
+                db.session.rollback()
 
     def update(self, data):
         for key, item in data.items():
