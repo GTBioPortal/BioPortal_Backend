@@ -2,6 +2,7 @@ import datetime
 
 from . import db
 from .utils import random_key
+from sqlalchemy.orm import backref
 
 class JobApplication(db.Model):
     """Job Application database schema
@@ -18,9 +19,11 @@ class JobApplication(db.Model):
 
     id = db.Column(db.String(16), primary_key=True, autoincrement=False,
         nullable=False)
-    applicant_id = db.Column(db.String(16), db.ForeignKey('students.id'),
+    applicant_id = db.Column(db.String(16), 
+        db.ForeignKey('students.id', ondelete='CASCADE'),
         nullable=False)
-    applicant = db.relationship('Student', backref='applications',
+    applicant = db.relationship('Student', 
+        backref=backref('applications', passive_deletes=True),
         foreign_keys=[applicant_id])
     timestamp = db.Column(db.DateTime, index=True,
         default=db.func.current_timestamp())

@@ -5,6 +5,7 @@ import uuid
 
 from . import db
 from .utils import random_key
+from sqlalchemy.orm import backref
 
 
 class UserFile(db.Model):
@@ -26,8 +27,11 @@ class UserFile(db.Model):
 
     id = db.Column(db.String(16), primary_key=True, autoincrement=False,
         nullable=False)
-    author_id = db.Column(db.String(16), db.ForeignKey('students.id'), nullable=False)
-    author = db.relationship('Student', backref='user_files',
+    author_id = db.Column(db.String(16),
+        db.ForeignKey('students.id', ondelete='CASCADE'),
+        nullable=False)
+    author = db.relationship('Student', 
+        backref=backref('user_files', passive_deletes=True),
         foreign_keys=[author_id])
     uploaded_at = db.Column(db.DateTime, index=True,
         default=db.func.current_timestamp())

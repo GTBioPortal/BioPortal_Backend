@@ -276,6 +276,31 @@ def create_student_account():
         })
         return response, 200
 
+@application.route('/student/delete', methods=['DELETE'])
+def delete_student_account():
+    auth = verify_auth(request, Student)
+    if auth['status'] == 'success':
+        student = Student.query.get(auth['data']['user_id'])
+        try:
+            student.delete()
+            response = jsonify({
+                'status': 'success'
+            })
+            return response, 200
+        except Exception as e:
+            raise e
+            response = jsonify({
+                'status': 'error',
+                'message': 'account could not be deleted'
+            })
+            return response, 500
+    else:
+        response = jsonify({
+            'status': 'error',
+            'message': 'invalid credentials'
+        })
+        return response, 401
+
 @application.route('/student/login', methods=['POST'])
 def student_login():
     data = request.json
