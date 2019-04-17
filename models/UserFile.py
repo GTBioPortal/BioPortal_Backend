@@ -89,6 +89,13 @@ class UserFile(db.Model):
         db.session.commit()
     
     def delete(self):
+        s3 = boto3.resource('s3',
+            region_name='us-east-1',
+            aws_access_key_id=os.environ['S3_ACCESS_KEY'],
+            aws_secret_access_key=os.environ['S3_SECRET_KEY']    
+        )
+        obj = s3.Object("gtbioportal", self.location)
+        obj.delete()
         db.session.delete(self)
         db.session.commit()
 
