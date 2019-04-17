@@ -204,7 +204,7 @@ def create_employer_account():
             'status': 'error',
             'message': 'User already exists'
         })
-        return response, 202
+        return response, 200
 
 @application.route('/employer/login', methods=['POST'])
 def employer_login():
@@ -274,7 +274,7 @@ def create_student_account():
             'status': 'error',
             'message': 'User already exists'
         })
-        return response, 202
+        return response, 200
 
 @application.route('/student/login', methods=['POST'])
 def student_login():
