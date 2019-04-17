@@ -2,7 +2,7 @@ import boto3
 import os
 
 from config import app_config
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from models import db, application, pwd_context
 from models.Employer import Employer
