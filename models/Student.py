@@ -88,6 +88,10 @@ class Student(db.Model):
             setattr(self, key, item)
         db.session.commit()
 
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
     @staticmethod
     def decode_auth_token(token):
         """
