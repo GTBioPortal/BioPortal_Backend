@@ -1,12 +1,15 @@
+import boto3
 import os
 
 from config import app_config
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from models import db, application, pwd_context
-from models.JobPosting import JobPosting
 from models.Employer import Employer
-
+from models.JobPosting import JobPosting
+from models.Student import Student
+from models.UserFile import UserFile
+from models.JobApplication import JobApplication
 
 def verify_auth(request, user_type):
     """Gets JWT from request authorization header and verifies it
@@ -24,7 +27,7 @@ def verify_auth(request, user_type):
         auth_token = None
     if auth_token:
         resp = user_type.decode_auth_token(auth_token)
-        if not isinstance(resp, str):
+        if isinstance(resp, str):
             user = user_type.query.filter_by(id=resp).first()
             response = {
                 'status': 'success',
@@ -73,36 +76,123 @@ def get_all_jobs():
             'status': 'success',
             'jobs': [job.json for job in job_postings]
         })
-        response.status_code = 200
-        return response
+        return response, 200
     except Exception as e:
         raise e
         response = jsonify({
             'status': 'error',
             'message': 'could not fetch job postings'
         })
-        response.status_code = 401
-        return response
+        return response, 401
 
-@application.route('/jobs/<job_id>', methods=['GET'])
+@application.route('/jobs/<job_id>', methods=['GET', 'PUT'])
 def get_job(job_id):
-    data = request.json
     try:
         job_posting = JobPosting.get_job(job_id)
+    except Exception as e:
+        response = jsonify({
+            'status': 'error',
+            'message': 'could not find job posting'
+        })
+        return response, 404
+
+    if request.method == 'PUT':
+        auth = verify_auth(request, Employer)
+        employer_id = auth['data']['user_id']
+        if job_posting.author_id == employer_id:
+            data = request.json
+            try:
+                job_posting.update(data)
+                response = jsonify({
+                    'status': 'success',
+                    'job_posting': job_posting.json
+                })
+                return response, 200
+            except Exception as e:
+                response = jsonify({
+                    'status': 'error',
+                    'message': 'Could not update job posting'
+                })
+                return response, 500
+        else:
+            response = jsonify({
+                'status': 'error',
+                'message': 'User did not create this job posting'
+            })
+            return response, 401
+    else:
         response = jsonify({
             'status': 'success',
             'data': job_posting.json
         })
-        response.status_code = 200
-        return response
+        return response, 200
+
+@application.route('/jobs/<job_id>/applications', methods=['GET'])
+def get_applications(job_id):
+    auth = verify_auth(request, Employer)
+    employer_id = auth['data']['user_id']
+    try:
+        job_posting = JobPosting.get_job(job_id)
+        if job_posting.author_id == employer_id:
+            applications = JobApplication.query.filter_by(posting_id=job_id)
+            response = jsonify({
+                'status': 'success',
+                'applications': [job_app.json for job_app in applications]
+            })
+            return response, 200
+        else:
+            response = jsonify({
+                'status': 'error',
+                'message': 'User did not create this job posting'
+            })
+            return response, 401
+    except Exception as e:
+        raise e
+        response = jsonify({
+            'status': 'error',
+            'message': 'could not get applications'
+        })
+        return response, 401
+
+@application.route('/application/<app_id>', methods=['DELETE'])
+def delete_application(app_id):
+    try:
+        job_app = JobApplication.query.get(app_id)
+        auth = verify_auth(request, Student)
+        if auth['status'] == 'success':
+            if job_app.applicant_id == auth['data']['user_id']:
+                job_app.delete()
+                response = jsonify({
+                    'status': 'success'
+                })
+                return response, 200
+        response = jsonify({
+            'status': 'error',
+            'message': 'user does not have permission to delete'
+        })
+        return response, 401
     except Exception as e:
         response = jsonify({
             'status': 'error',
-            'message': 'could not find job'
+            'message': 'could not find application'
         })
-        response.status_code = 401
-        return response
+        return response, 404
 
+@application.route('/employer/jobs', methods=['GET'])
+def get_employer_postings():
+    auth = verify_auth(request, Employer)
+    if auth['status'] == 'success':
+        employer = Employer.query.get(auth['data']['user_id'])
+        print(employer.id)
+        job_postings = employer.job_postings
+        print(len(job_postings))
+        response = jsonify({
+            'status': 'success',
+            'jobs': [job.json for job in job_postings]
+        })
+        return response, 200
+    else:
+        return jsonify(auth), 401
 
 @application.route('/employer/create', methods=['POST'])
 def create_employer_account():
@@ -138,7 +228,7 @@ def create_employer_account():
             'status': 'error',
             'message': 'User already exists'
         })
-        return response, 202
+        return response, 200
 
 @application.route('/employer/login', methods=['POST'])
 def employer_login():
@@ -208,7 +298,32 @@ def create_student_account():
             'status': 'error',
             'message': 'User already exists'
         })
-        return response, 202
+        return response, 200
+
+@application.route('/student/delete', methods=['DELETE'])
+def delete_student_account():
+    auth = verify_auth(request, Student)
+    if auth['status'] == 'success':
+        student = Student.query.get(auth['data']['user_id'])
+        try:
+            student.delete()
+            response = jsonify({
+                'status': 'success'
+            })
+            return response, 200
+        except Exception as e:
+            raise e
+            response = jsonify({
+                'status': 'error',
+                'message': 'account could not be deleted'
+            })
+            return response, 500
+    else:
+        response = jsonify({
+            'status': 'error',
+            'message': 'invalid credentials'
+        })
+        return response, 401
 
 @application.route('/student/login', methods=['POST'])
 def student_login():
@@ -237,6 +352,8 @@ def student_login():
                     'message': 'invalid credentials'
                 })
                 return response, 401
+        else:
+            print("LOGIN ERROR")
     except Exception as e:
         raise e
         response = jsonify({
@@ -244,6 +361,149 @@ def student_login():
             'message': 'error loging in'
         })
         return response, 401
+
+@application.route('/jobs/<job_id>/apply', methods=['POST'])
+def apply_to_job(job_id):
+    auth = verify_auth(request, Student)
+    if auth['status'] == 'success':
+        data = request.json
+        transcript = data.get('transcript', None)
+        if not transcript: 
+            transcript = None
+        cover_letter = data.get('cover_letter', None)
+        if not cover_letter:
+            cover_letter = None
+        resume = data.get('resume', None)
+        if not resume:
+            resume = None
+        job_application = JobApplication(auth['data']['user_id'],
+            job_id, resume, transcript, cover_letter
+        )
+        job_application.save()
+        response = jsonify({
+            'status': 'success'
+        })
+        return response, 200
+    else:
+        return jsonify(auth), 401
+
+@application.route('/upload', methods=['POST'])
+def upload_file():
+    auth = verify_auth(request, Student)
+    if auth['status'] == 'success':
+        data = request.form
+        data_file = request.files['file']
+        try:
+            user_file = UserFile(auth['data']['user_id'],
+                data['file_type'], data_file, data['file_name'])
+            user_file.save()
+            response = jsonify({
+                'status': 'success'
+            })
+            return response, 200
+        except Exception as e:
+            response = jsonify({
+                'status': 'error',
+                'message': 'Could not upload file'
+            })
+            return response, 500
+    else:
+        return jsonify(auth), 401
+
+
+def get_file_from_s3(file_path):
+    s3 = boto3.resource('s3',
+        region_name='us-east-1',
+        aws_access_key_id=os.environ['S3_ACCESS_KEY'],
+        aws_secret_access_key=os.environ['S3_SECRET_KEY']
+    )
+    user_file = s3.Object('gtbioportal', file_path).get()
+    #user_file = s3.meta.client.download_fileobj('gtbioportal', file_path, data)
+    return user_file
+
+@application.route('/files/<file_id>', methods=['POST', 'GET', 'DELETE'])
+def get_file(file_id):
+    """Returns file with given id from location in S3.
+
+    Uses authentication to check if requesting user is the
+    student who uploaded the file or an employer that owns a
+    job posting where an application exists containing this file
+    """
+    try:
+        user_file = UserFile.query.get(file_id)
+    except Exception as e:
+        response = jsonify({
+            'status': 'error',
+            'message': 'file not found'
+        })
+        return response, 404
+    if request.method == 'PUT':
+        data = request.get_json()
+        auth = verify_auth(request, Employer)
+        try:
+            job_app = JobApplication.query.get(data['application_id'])
+            job_posting = job_app.job_posting
+            if job_posting.author_id == auth['data']['user_id']:
+                fdata = get_file_from_s3(user_file.location)
+                response = make_response(fdata['Body'].read())
+                response.headers['Content-Type'] = 'application/pdf'
+                return response
+        except Exception as e:
+            response = jsonify({
+                'status': 'error',
+                'message': 'could not find application'
+            })
+            return response, 404
+    elif request.method == 'GET':
+        auth = verify_auth(request, Student)
+        if auth['status'] == 'success':
+            if user_file.author_id == auth['data']['user_id']:
+                fdata = get_file_from_s3(user_file.location)
+                response = make_response(fdata['Body'].read())
+                response.headers['Content-Type'] = 'application/pdf'
+                return response
+        response = jsonify({
+            'status': 'error',
+            'message': 'access denied'
+        })
+        return reponse, 401
+    else:
+        auth = verify_auth(request, Student)
+        if auth['status'] == 'success' and auth['data']['user_id'] == user_file.author_id:
+            try:
+                user_file.delete()
+                response = jsonify({
+                    'status': 'success'
+                })
+                return response, 200
+            except Exception as e:
+                raise e
+                response = jsonify({
+                    'status': 'error',
+                    'message': 'could not delete file'
+                })
+                return response, 500
+        response = jsonify({
+            'status': 'error',
+            'message': 'user does not have permission to delete file'
+        })
+        return response, 401
+
+
+
+@application.route('/student/files', methods=['GET'])
+def get_files():
+    auth = verify_auth(request, Student)
+    if auth['status'] == 'success':
+        student = Student.query.get(auth['data']['user_id'])
+        files = student.user_files
+        response = jsonify({
+            'status': 'success',
+            'files': [f.json for f in files]
+        })
+        return response, 200
+    else:
+        return jsonify(auth), 401
 
 if __name__ == '__main__':
     application.run(debug=True)

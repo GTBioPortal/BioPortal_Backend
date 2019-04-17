@@ -1,7 +1,10 @@
 import datetime
+import jwt
+import os
 
 from . import db
 from . import pwd_context
+from .utils import random_key
 
 
 class Student(db.Model):
@@ -16,10 +19,11 @@ class Student(db.Model):
     """
     __tablename__ = 'students'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(16), primary_key=True, autoincrement=False,
+        nullable=False)
     name = db.Column(db.String(64), nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
-    password = db.Column(db.String(64), nullable=False)
+    password = db.Column(db.String(256), nullable=False)
     class_standing = db.Column(db.String(2), nullable=False)
 
     def __init__(self, name, email, password, class_standing):
@@ -57,11 +61,36 @@ class Student(db.Model):
             }
             return jwt.encode(
                 payload,
-                app.config.get('SECRET_KEY'),
+                os.environ['SECRET_KEY'],
                 algorithm='HS256'
             )
         except Exception as e:
+            raise e
             return e
+
+    def save(self):
+        success = False
+        attempts = 0
+        while not success:
+            self.id = random_key(16)
+            if attempts > 4:
+                raise TimeoutError("Too many attempts")
+            db.session.add(self)
+            try:
+                db.session.commit()
+                success = True
+            except:
+                attempts += 1
+                db.session.rollback()
+
+    def update(self, data):
+        for key, item in data.items():
+            setattr(self, key, item)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
     @staticmethod
     def decode_auth_token(token):
