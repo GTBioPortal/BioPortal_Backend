@@ -420,37 +420,6 @@ def get_file(file_id):
         return reponse, 401
 
 
-    try:
-        user_file = UserFile.query.get(file_id)
-        auth = verify_auth(request, Student)
-        if auth['status'] == 'success':
-            if user_file.author_id == auth['data']['user_id']:
-                fdata = get_file_from_s3(file_id)
-        else:
-            auth = verify_auth(request, Employer)
-            if auth['status'] == 'success':
-                employer = Employer.query.get(auth['data']['user_id'])
-                job_postings = employer.job_postings
-                for posting in job_postings:
-
-
-
-    except Exception as e:
-        response = jsonify({
-            'status': 'error',
-            'message': 'File does not exist'
-        })
-        return response, 500
-
-    auth = verify_auth(request, Student)
-    if auth['status'] == 'success':
-        student = Student.query.get(auth['data']['user_id'])
-    else:
-        auth = verify_auth(request, Employer)
-        if auth['status'] == 'success':
-            employer = Employer.query.get(auth['data']['user_id'])
-
-
 @application.route('/student/files', methods=['GET'])
 def get_files():
     auth = verify_auth(request, Student)
