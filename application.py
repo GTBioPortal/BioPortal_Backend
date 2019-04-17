@@ -395,7 +395,7 @@ def get_file(file_id):
             job_app = JobApplication.query.get(data['application_id'])
             job_posting = job_app.job_posting
             if job_posting.author_id == auth['data']['user_id']:
-                fdata = get_file_from s3(user_file.location)
+                fdata = get_file_from_s3(user_file.location)
                 response = make_response(fdata['Body'].read())
                 response.headers['Content-Type'] = 'application/pdf'
                 return response
