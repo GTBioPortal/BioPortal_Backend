@@ -26,7 +26,7 @@ def verify_auth(request, user_type):
         auth_token = None
     if auth_token:
         resp = user_type.decode_auth_token(auth_token)
-        if not isinstance(resp, str):
+        if isinstance(resp, str):
             user = user_type.query.filter_by(id=resp).first()
             response = {
                 'status': 'success',
@@ -36,8 +36,6 @@ def verify_auth(request, user_type):
                 }
             }
             return response
-        print(type(resp))
-        print("TEST: " + resp)
         response = {
             'status': 'error',
             'message': resp
