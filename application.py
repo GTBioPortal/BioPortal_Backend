@@ -36,7 +36,8 @@ def verify_auth(request, user_type):
                 }
             }
             return response
-        print(resp)
+        print(type(resp))
+        print("TEST: " + resp)
         response = {
             'status': 'error',
             'message': resp
@@ -348,7 +349,6 @@ def upload_file():
             user_file = UserFile(auth['data']['user_id'],
                 data['file_type'], data_file, data['file_name'])
             user_file.save()
-
             response = jsonify({
                 'status': 'success'
             })
