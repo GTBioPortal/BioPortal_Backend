@@ -154,6 +154,30 @@ def get_applications(job_id):
         })
         return response, 401
 
+@application.route('/application/<app_id>', methods=['DELETE'])
+def delete_application(app_id):
+    try:
+        job_app = JobApplication.query.get(app_id)
+        auth = verify_auth(request, Student)
+        if auth['status'] == 'success':
+            if job_app.applicant_id == auth['data']['user_id']:
+                job_app.delete()
+                response = jsonify({
+                    'status': 'success'
+                })
+                return response, 200
+        response = jsonify({
+            'status': 'error',
+            'message': 'user does not have permission to delete'
+        })
+        return response, 401
+    except Exception as e:
+        response = jsonify({
+            'status': 'error',
+            'message': 'could not find application'
+        })
+        return response, 404
+
 @application.route('/employer/jobs', methods=['GET'])
 def get_employer_postings():
     auth = verify_auth(request, Employer)
