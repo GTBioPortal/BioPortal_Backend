@@ -368,7 +368,8 @@ def get_file_from_s3(file_path):
         aws_access_key_id=os.environ['S3_ACCESS_KEY'],
         aws_secret_access_key=os.environ['S3_SECRET_KEY']
     )
-    user_file = s3.meta.client.download_fileobj('gtbioportal', file_path)
+    user_file = s3.Object('gtbioportal', file_path).get()
+    #user_file = s3.meta.client.download_fileobj('gtbioportal', file_path, data)
     return user_file
 
 @application.route('/files/<file_id>', methods=['POST', 'GET'])
