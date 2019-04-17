@@ -421,7 +421,7 @@ def get_file_from_s3(file_path):
     #user_file = s3.meta.client.download_fileobj('gtbioportal', file_path, data)
     return user_file
 
-@application.route('/files/<file_id>', methods=['POST', 'GET'])
+@application.route('/files/<file_id>', methods=['POST', 'GET', 'DELETE'])
 def get_file(file_id):
     """Returns file with given id from location in S3.
 
@@ -454,7 +454,7 @@ def get_file(file_id):
                 'message': 'could not find application'
             })
             return response, 404
-    else:
+    elif request.method == 'GET':
         auth = verify_auth(request, Student)
         if auth['status'] == 'success':
             if user_file.author_id == auth['data']['user_id']:
@@ -467,6 +467,28 @@ def get_file(file_id):
             'message': 'access denied'
         })
         return reponse, 401
+    else:
+        auth = verify_auth(request, Student)
+        if auth['status'] == 'success' and auth['data']['user_id'] == user_file.author_id:
+            try:
+                user_file.delete()
+                response = jsonify({
+                    'status': 'success'
+                })
+                return response, 200
+            except Exception as e:
+                raise e
+                response = jsonify({
+                    'status': 'error',
+                    'message': 'could not delete file'
+                })
+                return response, 500
+        response = jsonify({
+            'status': 'error',
+            'message': 'user does not have permission to delete file'
+        })
+        return response, 401
+
 
 
 @application.route('/student/files', methods=['GET'])
