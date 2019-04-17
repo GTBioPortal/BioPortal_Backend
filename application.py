@@ -371,7 +371,7 @@ def get_file_from_s3(file_path):
     user_file = s3.meta.client.download_fileobj('gtbioportal', file_path)
     return user_file
 
-@application.route('/files/<file_id>', methods=['POST'])
+@application.route('/files/<file_id>', methods=['POST', 'GET'])
 def get_file(file_id):
     """Returns file with given id from location in S3.
 
@@ -379,7 +379,6 @@ def get_file(file_id):
     student who uploaded the file or an employer that owns a
     job posting where an application exists containing this file
     """
-    data = request.get_json()
     try:
         user_file = UserFile.query.get(file_id)
     except Exception as e:
@@ -388,7 +387,8 @@ def get_file(file_id):
             'message': 'file not found'
         })
         return response, 404
-    if 'application_id' in data:
+    if request.method == 'PUT':
+        data = request.get_json()
         auth = verify_auth(request, Employer)
         try:
             job_app = JobApplication.query.get(data['application_id'])
