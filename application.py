@@ -1,3 +1,4 @@
+import boto3
 import os
 
 from config import app_config
