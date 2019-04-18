@@ -440,6 +440,7 @@ def get_file(file_id):
     if request.method == 'POST':
         data = request.get_json()
         auth = verify_auth(request, Employer)
+        print(auth)
         try:
             job_app = JobApplication.query.get(data['application_id'])
             job_posting = job_app.job_posting
