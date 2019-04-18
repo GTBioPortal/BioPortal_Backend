@@ -437,7 +437,7 @@ def get_file(file_id):
             'message': 'file not found'
         })
         return response, 404
-    if request.method == 'PUT':
+    if request.method == 'POST':
         data = request.get_json()
         auth = verify_auth(request, Employer)
         try:
