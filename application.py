@@ -27,7 +27,13 @@ def verify_auth(request, user_type):
         auth_token = None
     if auth_token:
         resp = user_type.decode_auth_token(auth_token)
-        if isinstance(resp, str):
+        if resp == 'Expired JWT' or resp == 'Invalid JWT':
+            response = {
+                'status': 'error',
+                'message': resp
+            }
+            return response
+        else:
             user = user_type.query.filter_by(id=resp).first()
             response = {
                 'status': 'success',
@@ -37,11 +43,6 @@ def verify_auth(request, user_type):
                 }
             }
             return response
-        response = {
-            'status': 'error',
-            'message': resp
-        }
-        return response
     else:
         response = {
             'status': 'error',
@@ -426,7 +427,7 @@ def get_file(file_id):
     """Returns file with given id from location in S3.
 
     Uses authentication to check if requesting user is the
-    student who uploaded the file or an employer that owns a
+    student who uploaded thPUTe file or an employer that owns a
     job posting where an application exists containing this file
     """
     try:
@@ -440,7 +441,6 @@ def get_file(file_id):
     if request.method == 'POST':
         data = request.get_json()
         auth = verify_auth(request, Employer)
-        print(auth)
         try:
             job_app = JobApplication.query.get(data['application_id'])
             job_posting = job_app.job_posting
@@ -450,7 +450,6 @@ def get_file(file_id):
                 response.headers['Content-Type'] = 'application/pdf'
                 return response
         except Exception as e:
-            raise e
             response = jsonify({
                 'status': 'error',
                 'message': 'could not find application'
