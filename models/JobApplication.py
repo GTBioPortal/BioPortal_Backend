@@ -77,7 +77,7 @@ class JobApplication(db.Model):
                 'name': self.applicant.name,
                 'email': self.applicant.email,
                 'class': self.applicant.class_standing
-            }
+            },
             'timestamp': self.timestamp,
             'resume': self.resume_id,
             'cover_letter': self.cover_letter_id,
