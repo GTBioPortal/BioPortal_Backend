@@ -2,6 +2,7 @@ import datetime
 
 from . import db
 from . import pwd_context
+from .utils import random_key
 
 
 class Admin(db.Model):
@@ -15,12 +16,15 @@ class Admin(db.Model):
     """
     __tablename__ = 'admins'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(16), primary_key=True, autoincrement=False,
+        nullable=False)
     name = db.Column(db.String(64), nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(64), nullable=False)
+    position = db.Column(db.String(64), nullable=False)
+    is_approved = db.Column(db.Boolean, nullable=False, default=False)
 
-    def __init__(self, name, email, password):
+    def __init__(self, name, email, password, position):
         """
         Initializes Admin object with encrypted password using
         argon2 hash function. 
@@ -33,6 +37,31 @@ class Admin(db.Model):
         self.name = name
         self.email = email
         self.password = pwd_context.hash(password)
+        self.position = position
+
+    def save(self):
+        success = False
+        attempts = 0
+        while not success:
+            self.id = random_key(16)
+            if attempts > 4:
+                raise TimeoutError("Too many attempts")
+            db.session.add(self)
+            try:
+                db.session.commit()
+                success = True
+            except:
+                attempts += 1
+                db.session.rollback()
+
+    def update(self, data):
+        for key, item in data.items():
+            setattr(self, key, item)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
     # TODO: make JWT encode and decode usable with 
     # Employer and Student classes rather than duplicating code

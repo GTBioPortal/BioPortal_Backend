@@ -259,7 +259,73 @@ def employer_login():
                 })
                 return response, 401
     except Exception as e:
-        raise e
+        response = jsonify({
+            'status': 'error',
+            'message': 'error loging in'
+        })
+        return response, 401
+
+@application.route('/admin/create', methods=['POST'])
+def create_admin_account():
+    data = request.get_json()
+    user = Admin.query.filter_by(email=data.get('email')).first()
+    if not user:
+        try:
+            user = Admin(
+                data['name'],
+                data['email'],
+                data['password'],
+                data['position']
+            )
+            user.save()
+            auth_token = user.encode_auth_token(user.id)
+            response = jsonify({
+                'status': 'success',
+                'message': 'Account created',
+                'auth_token': auth_token.decode()
+            })
+            return response, 200
+        except Exception as e:
+            response = jsonify({
+                'status': 'error',
+                'message': 'error creating account',
+            })
+            return response, 500
+    else:
+        response = jsonify({
+            'status': 'error',
+            'message': 'User already exists'
+        })
+        return response, 200
+
+@application.route('/admin/login', methods=['POST'])
+def admin_login():
+    data = request.get_json()
+    try:
+        user = Admin.query.filter_by(email=data['email']).first()
+        if user:
+            if pwd_context.verify(data['password'], user.password):
+                auth_token = user.encode_auth_token(user.id)
+                if auth_token:
+                    response = jsonify({
+                        'status': 'success',
+                        'message': 'logged in',
+                        'auth_token': auth_token.decode()
+                    })
+                    return response, 200
+                else:
+                    response = jsonify({
+                        'status': 'error',
+                        'message': 'authentication error'
+                    })
+                    return response, 401
+            else:
+                response = jsonify({
+                    'status': 'error',
+                    'message': 'invalid credentials'
+                })
+                return response, 401
+    except Exception as e:
         response = jsonify({
             'status': 'error',
             'message': 'error loging in'
@@ -287,11 +353,9 @@ def create_student_account():
             })
             return response, 200
         except Exception as e:
-            raise e
             response = jsonify({
                 'status': 'error',
                 'message': 'Error creating account',
-                'error': str(e)
             })
             return response, 401
     else:
@@ -354,9 +418,12 @@ def student_login():
                 })
                 return response, 401
         else:
-            print("LOGIN ERROR")
+            response = jsonify({
+                'status': 'error',
+                'message': 'user does not exist'
+            })
+            return response, 200
     except Exception as e:
-        raise e
         response = jsonify({
             'status': 'error',
             'message': 'error loging in'
