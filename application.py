@@ -344,6 +344,7 @@ def get_employer_list():
             })
             return response, 200
         except Exception as e:
+            raise e
             response = jsonify({
                 'status': 'error',
                 'message': 'could not fetch employers'
