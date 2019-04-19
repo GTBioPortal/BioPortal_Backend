@@ -264,6 +264,7 @@ def employer_login():
                 })
                 return response, 401
     except Exception as e:
+        raise e
         response = jsonify({
             'status': 'error',
             'message': 'error loging in'
