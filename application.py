@@ -353,6 +353,27 @@ def get_employer_list():
     else:
         return jsonify(auth), 401
 
+@application.route('/employer/<id>/verify', methods=['GET'])
+def verify_employer(id):
+    auth = verify_auth(request, Admin)
+    if auth['status'] == 'success':
+        try:
+            employer = Employer.query.get(id)
+            employer.update({'is_verified': True})
+            response = jsonify({
+                'status': 'success'
+            })
+            return response, 200
+        except Exception as e:
+            raise e
+            response = jsonify({
+                'status': 'error',
+                'message': 'could not verify employer'
+            })
+            return response, 200
+    else:
+        return jsonify(auth), 401
+
 @application.route('/student/create', methods=['POST'])
 def create_student_account():
     data = request.json
