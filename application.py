@@ -308,7 +308,6 @@ def admin_login():
             if pwd_context.verify(data['password'], user.password):
                 auth_token = user.encode_auth_token(user.id)
                 if auth_token:
-                    print auth_token
                     response = jsonify({
                         'status': 'success',
                         'message': 'logged in',
