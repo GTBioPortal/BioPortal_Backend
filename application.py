@@ -359,7 +359,7 @@ def verify_employer(id):
     if auth['status'] == 'success':
         try:
             employer = Employer.query.get(id)
-            employer.update({'is_verified': True})
+            employer.update({'is_approved': True})
             response = jsonify({
                 'status': 'success'
             })
