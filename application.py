@@ -238,7 +238,7 @@ def employer_login():
         if user:
             if pwd_context.verify(data['password'], user.password):
                 if not user.is_approved:
-                    response = jsonfiy({
+                    response = jsonify({
                         'status': 'error',
                         'message': 'account is not approved'
                     })
@@ -264,7 +264,6 @@ def employer_login():
                 })
                 return response, 401
     except Exception as e:
-        raise e
         response = jsonify({
             'status': 'error',
             'message': 'error loging in'
