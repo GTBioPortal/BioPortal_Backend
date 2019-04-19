@@ -358,7 +358,7 @@ def get_employer_list():
     else:
         return jsonify(auth), 401
 
-@application.route('admin/students', methods=['GET'])
+@application.route('/admin/students', methods=['GET'])
 def get_student_list():
     auth = verify_auth(request, Admin)
     if auth['status'] == 'success':
