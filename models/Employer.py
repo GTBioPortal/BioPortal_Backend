@@ -106,7 +106,7 @@ class Employer(db.Model):
             'email': self.email,
             'company': self.company,
             'company_description': self.company_description,
-            'is_approved': self.is_approved
+            'is_approved': self.is_approved,
             'job_postings': [posting.json for posting in self.job_postings]
         }
     
