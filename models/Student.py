@@ -91,6 +91,16 @@ class Student(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+    
+    @property
+    def json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'class': self.class_standing,
+            'applications': [job_app.json for job_app in self.applications]
+        }
 
     @staticmethod
     def decode_auth_token(token):
@@ -110,3 +120,7 @@ class Student(db.Model):
             return 'Expired Token'
         except jwt.InvalidTokenError:
             return 'Invalid Token'
+
+    @staticmethod
+    def get_all():
+        return Student.query.all()

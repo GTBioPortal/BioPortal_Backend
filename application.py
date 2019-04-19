@@ -350,10 +350,29 @@ def get_employer_list():
             })
             return response, 200
         except Exception as e:
-            raise e
             response = jsonify({
                 'status': 'error',
                 'message': 'could not fetch employers'
+            })
+            return response, 500
+    else:
+        return jsonify(auth), 401
+
+@application.route('admin/students', methods=['GET'])
+def get_student_list():
+    auth = verify_auth(request, Admin)
+    if auth['status'] == 'success':
+        try:
+            students = Student.get_all()
+            response = jsonify({
+                'status': 'success',
+                'students': [student.json for student in students]
+            })
+            return response, 200
+        except Exception as e:
+            response = jsonify({
+                'status': 'error',
+                'message': 'could not fetch students'
             })
             return response, 500
     else:
