@@ -88,6 +88,7 @@ class Admin(db.Model):
                 algorithm='HS256'
             )
         except Exception as e:
+            raise e
             return e
 
     @staticmethod
