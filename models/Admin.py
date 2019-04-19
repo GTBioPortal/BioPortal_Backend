@@ -1,4 +1,6 @@
 import datetime
+import jwt
+import os
 
 from . import db
 from . import pwd_context
@@ -88,7 +90,6 @@ class Admin(db.Model):
                 algorithm='HS256'
             )
         except Exception as e:
-            raise e
             return e
 
     @staticmethod
