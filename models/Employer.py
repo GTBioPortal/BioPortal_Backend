@@ -134,3 +134,7 @@ class Employer(db.Model):
             return 'Expired Signature'
         except jwt.InvalidTokenError:
             return 'Invalid JWT'
+
+    @staticmethod
+    def get_all():
+        return Employer.query.all()
