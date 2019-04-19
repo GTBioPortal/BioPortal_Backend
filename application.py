@@ -582,6 +582,7 @@ def get_file(file_id):
                 response.headers['Content-Type'] = 'application/pdf'
                 return response
         except Exception as e:
+            raise e
             response = jsonify({
                 'status': 'error',
                 'message': 'could not find application'
