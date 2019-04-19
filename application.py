@@ -80,7 +80,6 @@ def get_all_jobs():
         })
         return response, 200
     except Exception as e:
-        raise e
         response = jsonify({
             'status': 'error',
             'message': 'could not fetch job postings'
@@ -149,7 +148,6 @@ def get_applications(job_id):
             })
             return response, 401
     except Exception as e:
-        raise e
         response = jsonify({
             'status': 'error',
             'message': 'could not get applications'
@@ -216,7 +214,6 @@ def create_employer_account():
             })
             return response, 200
         except Exception as e:
-            raise e
             response = jsonify({
                 'status': 'error',
                 'message': 'Error creating account',
@@ -331,7 +328,6 @@ def admin_login():
                 })
                 return response, 401
     except Exception as e:
-        raise e
         response = jsonify({
             'status': 'error',
             'message': 'error logging in'
@@ -443,7 +439,6 @@ def delete_student_account():
             })
             return response, 200
         except Exception as e:
-            raise e
             response = jsonify({
                 'status': 'error',
                 'message': 'account could not be deleted'
@@ -582,7 +577,6 @@ def get_file(file_id):
                 response.headers['Content-Type'] = 'application/pdf'
                 return response
         except Exception as e:
-            raise e
             response = jsonify({
                 'status': 'error',
                 'message': 'could not find application'
