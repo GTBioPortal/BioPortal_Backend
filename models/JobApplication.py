@@ -73,7 +73,11 @@ class JobApplication(db.Model):
     def json(self):
         return {
             'id': self.id,
-            'applicant': self.applicant.name,
+            'applicant': {
+                'name': self.applicant.name,
+                'email': self.applicant.email,
+                'class': self.applicant.class_standing
+            }
             'timestamp': self.timestamp,
             'resume': self.resume_id,
             'cover_letter': self.cover_letter_id,

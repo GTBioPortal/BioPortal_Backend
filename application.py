@@ -478,7 +478,6 @@ def get_file(file_id):
                 })
                 return response, 200
             except Exception as e:
-                raise e
                 response = jsonify({
                     'status': 'error',
                     'message': 'could not delete file'
@@ -489,8 +488,6 @@ def get_file(file_id):
             'message': 'user does not have permission to delete file'
         })
         return response, 401
-
-
 
 @application.route('/student/files', methods=['GET'])
 def get_files():
