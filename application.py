@@ -5,6 +5,7 @@ from config import app_config
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from models import db, application, pwd_context
+from models.Admin import Admin
 from models.Employer import Employer
 from models.JobPosting import JobPosting
 from models.Student import Student
