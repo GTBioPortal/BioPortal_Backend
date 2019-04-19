@@ -237,6 +237,12 @@ def employer_login():
         user = Employer.query.filter_by(email=data['email']).first()
         if user:
             if pwd_context.verify(data['password'], user.password):
+                if not user.is_approved:
+                    response = jsonfiy({
+                        'status': 'error',
+                        'message': 'account is not approved'
+                    })
+                    return response, 200
                 auth_token = user.encode_auth_token(user.id)
                 if auth_token:
                     response = jsonify({
@@ -528,7 +534,6 @@ def get_file_from_s3(file_path):
         aws_secret_access_key=os.environ['S3_SECRET_KEY']
     )
     user_file = s3.Object('gtbioportal', file_path).get()
-    #user_file = s3.meta.client.download_fileobj('gtbioportal', file_path, data)
     return user_file
 
 @application.route('/files/<file_id>', methods=['POST', 'GET', 'DELETE'])
