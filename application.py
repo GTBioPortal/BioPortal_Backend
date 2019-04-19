@@ -85,7 +85,7 @@ def get_all_jobs():
             'status': 'error',
             'message': 'could not fetch job postings'
         })
-        return response, 401
+        return response, 500
 
 @application.route('/jobs/<job_id>', methods=['GET', 'PUT'])
 def get_job(job_id):
@@ -185,9 +185,7 @@ def get_employer_postings():
     auth = verify_auth(request, Employer)
     if auth['status'] == 'success':
         employer = Employer.query.get(auth['data']['user_id'])
-        print(employer.id)
         job_postings = employer.job_postings
-        print(len(job_postings))
         response = jsonify({
             'status': 'success',
             'jobs': [job.json for job in job_postings]
@@ -333,6 +331,26 @@ def admin_login():
             'message': 'error logging in'
         })
         return response, 401
+
+@application.route('/admin/employers', methods=['GET'])
+def get_employer_list():
+    auth = verify_auth(request, Admin)
+    if auth['status'] == 'success':
+        try:
+            employers = Employer.get_all()
+            response = jsonify({
+                'status': 'success',
+                'employers': [employer.json for employer in employers]
+            })
+            return response, 200
+        except Exception as e:
+            response = jsonify({
+                'status': 'error',
+                'message': 'could not fetch employers'
+            })
+            return response, 500
+    else:
+        return jsonify(auth), 401
 
 @application.route('/student/create', methods=['POST'])
 def create_student_account():

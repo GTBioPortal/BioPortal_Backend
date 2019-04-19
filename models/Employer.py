@@ -97,6 +97,18 @@ class Employer(db.Model):
         for key, item in data.items():
             setattr(self, key, item)
         db.session.commit()
+
+    @property
+    def json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'company': self.company,
+            'company_description': self.company_description,
+            'is_approved': self.is_approved
+            'job_postings': [posting.json for posting in self.job_postings]
+        }
     
     # TODO: delete needs to also change relationship tables
     # e.g. also delete all job postings this user has created
