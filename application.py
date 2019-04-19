@@ -565,7 +565,6 @@ def get_file(file_id):
     try:
         user_file = UserFile.query.get(file_id)
     except Exception as e:
-        raise e
         response = jsonify({
             'status': 'error',
             'message': 'file not found'
