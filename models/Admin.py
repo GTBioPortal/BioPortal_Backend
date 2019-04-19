@@ -19,8 +19,8 @@ class Admin(db.Model):
     id = db.Column(db.String(16), primary_key=True, autoincrement=False,
         nullable=False)
     name = db.Column(db.String(64), nullable=False)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    password = db.Column(db.String(64), nullable=False)
+    email = db.Column(db.String(256), unique=True, nullable=False)
+    password = db.Column(db.String(256), nullable=False)
     position = db.Column(db.String(64), nullable=False)
     is_approved = db.Column(db.Boolean, nullable=False, default=False)
 
